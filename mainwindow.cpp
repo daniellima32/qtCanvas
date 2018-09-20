@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->refreshPixmap();
 }
 
 
@@ -30,25 +31,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() == Qt::RightButton)
     {
         QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
-
-        //QPointF diff = {windowPos.x() - lastMouseWindowPosition.x(), windowPos.y() - lastMouseWindowPosition.y()}; //wrong
         QPointF diff = {lastMouseWindowPosition.x() - windowPos.x(), lastMouseWindowPosition.y() - windowPos.y()}; //better
-
-
-
-        //QPointF diff = {windowPos.x() - transformation::window.point.x(), windowPos.y() - transformation::window.point.y()};
-        //QPointF diff = {transformation::window.point.x() - windowPos.x(), transformation::window.point.y() + windowPos.y()};
-        //QPointF diff = {windowPos.x() + transformation::window.width/2, windowPos.y() + transformation::window.height/2};
-        //translateRect(diff, transformation::window);
-        //std::cout << windowPos.x() <<" " << windowPos.y() << std::endl;
-        //std::cout.flush();
-        //transformation::window.point.setX(windowPos.x());
-        //transformation::window.point.setY(windowPos.y());
-
         translateRect(diff, transformation::window);
-        //this->repaint();
         this->refreshPixmap();
-        lastMouseWindowPosition = windowPos;
     }
 }
 
@@ -59,12 +44,10 @@ void MainWindow::wheelEvent(QWheelEvent *event)
     if (event->angleDelta().y() > 0)
     {
         zoom(zoomIn, event->x(), event->y());
-        //this->repaint();
     }
     else
     {
         zoom(zoomOut, event->x(), event->y());
-        //this->repaint();
     }
     this->refreshPixmap();
 }
@@ -89,7 +72,7 @@ MainWindow::~MainWindow()
 void MainWindow::refreshPixmap()
 {
     pixmap = QPixmap(size());
-    pixmap.fill(Qt::lightGray);
+    pixmap.fill(Qt::white);
 
     QPainter painter(&pixmap);
     painter.initFrom(this);
