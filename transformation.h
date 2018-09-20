@@ -110,6 +110,14 @@ QPointF viewPortToWindow1(QPointF viewPoint)
     return windowPoint;
 }
 
+QPoint viewPortToWindow2(QPointF viewPoint)
+{
+    QPoint windowPoint;
+    windowPoint.setX((((viewPoint.x() - viewPort.point.x()) * window.width) + viewPort.width * window.point.x()) / viewPort.width);
+    windowPoint.setY(((viewPort.height * window.point.y()) - ((viewPoint.y() - viewPort.point.y()) * window.height)) / viewPort.height);
+    return windowPoint;
+}
+
 void scaleRect(QPointF scaleFactor, Rect& rect)
 {
     rect.point.setX(rect.point.x() * scaleFactor.x());
@@ -166,6 +174,51 @@ std::vector<QPointF> getRectPoints (QPointF origin, QPointF final)
                                     {origin.x() + (final.x() - origin.x()), origin.y() + (final.y() - origin.y())},
                                     {origin.x(), origin.y() + (final.y() - origin.y())}};
     return points;
+}
+
+//Essa função deve ser aplicada recebendo viewport
+QPoint getLeftTop(std::vector<QPointF> vec)
+{
+    bool valid = true;
+    for (int i = 0; i< vec.size(); i++)
+    {
+        for (int j = 0; j< vec.size(); j++)
+        {
+            //if (!(vec[i].x()  <= vec[j].x() && vec[i].y()  >= vec[j].y()))
+            if (vec[i].x()  > vec[j].x() || vec[i].y()  < vec[j].y())
+            {
+                valid = false;
+                break;
+            }
+        }
+        if (valid)
+            return QPoint(vec[i].x(), vec[i].y());
+        else
+            valid = true;
+    }
+    return QPoint(0,0);
+}
+
+QPoint getBottomRight(std::vector<QPointF> vec)
+{
+    bool valid = true;
+    for (int i = 0; i< vec.size(); i++)
+    {
+        for (int j = 0; j< vec.size(); j++)
+        {
+            //if (!(vec[i].x()  >= vec[j].x() && vec[i].y()  <= vec[j].y()))
+            if (vec[i].x()  < vec[j].x() || vec[i].y()  > vec[j].y())
+            {
+                valid = false;
+                break;
+            }
+        }
+        if (valid)
+            return QPoint(vec[i].x(), vec[i].y());
+        else
+            valid = true;
+    }
+    return QPoint(0,0);
 }
 
 #endif // TRANSFORMATION_H

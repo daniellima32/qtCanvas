@@ -62,6 +62,28 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
         selectedRect.push_back(lastMouseWindowPosition);
         selectedRect.push_back(windowPos);
+
+        //atualizar seleção de elementos
+        //QPointF origin = windowToViewPort1(selectedRect[0]);
+        //QPointF final = windowToViewPort1(selectedRect[1]);
+
+        QPointF origin = windowToViewPort1(selectedRect[0]);
+        QPointF final = windowToViewPort1(selectedRect[1]);
+        std::vector<QPointF> vec = getRectPoints(origin, final);
+        QPoint pLeftTopViewPort = getLeftTop(vec);
+        QPoint pRightBottomViewPort = getBottomRight(vec);
+        QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
+        for (auto &el: elements)
+        {
+            if (selectionRect.contains(el.point.x(), el.point.y()))
+            {
+                el.isSelected = true;
+            }
+            else
+            {
+                el.isSelected = false;
+            }
+        }
     }
     this->refreshPixmap();
 }
