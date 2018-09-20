@@ -95,14 +95,21 @@ void MainWindow::refreshPixmap()
    //Desenhando demanda
    painter.setPen(Qt::red);
    painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
-   //painter.drawConvexPolygon(points, 4);
    painter.drawConvexPolygon(getDemandPoints(windowToViewPort1({-130, 40})).data(), 4);
 
    //Desenhando reservoir
    painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
-   painter.setPen(QColor(20, 170, 255));
-   //painter.drawConvexPolygon(points2, 3);
+   painter.setPen(QColor(20, 170, 255)); //cor azul claro
    painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 40})).data(), 3);
+
+
+
+   //Desenhando segundo reservoir
+   painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
+   QPen pen(Qt::red);
+   pen.setWidth(2);
+   painter.setPen(pen);
+   painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 60})).data(), 3);
 
 
     update();
