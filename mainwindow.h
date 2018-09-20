@@ -19,10 +19,11 @@ public:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
+    void refreshPixmap();
 private:
     Ui::MainWindow *ui;
     bool pan = false;
-
+    QPixmap pixmap;
     QPointF lastMouseWindowPosition = {0.0, 0.0};
 };
 

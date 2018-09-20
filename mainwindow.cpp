@@ -17,33 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-   //Pontos da demanda
-   const QPointF points[4] =
-   {
-       windowToViewPort1(QPointF(-150, 30)),
-       windowToViewPort1(QPointF(-130, 40)),
-       windowToViewPort1(QPointF(-150, 50)),
-       windowToViewPort1(QPointF(-170, 40))
-   };
-
-   //Reservoir
-   /*const QPointF points2[3] = {
-       windowToViewPort1(QPointF(0, 40)),
-       windowToViewPort1(QPointF(10,30)),
-       windowToViewPort1(QPointF(-10, 30))
-   };*/
-
-   //Desenhando demanda
-   painter.setPen(Qt::red);
-   painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
-   //painter.drawConvexPolygon(points, 4);
-   painter.drawConvexPolygon(getDemandPoints(windowToViewPort1({-130, 40})).data(), 4);
-
-   //Desenhando reservoir
-   painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
-   painter.setPen(QColor(20, 170, 255));
-   //painter.drawConvexPolygon(points2, 3);
-   painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 40})).data(), 3);
+    painter.drawPixmap(event->rect(), this->pixmap);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
@@ -70,8 +44,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         //transformation::window.point.setY(windowPos.y());
 
         translateRect(diff, transformation::window);
-
-        this->repaint();
+        //this->repaint();
+        this->refreshPixmap();
         lastMouseWindowPosition = windowPos;
     }
 }
@@ -83,13 +57,14 @@ void MainWindow::wheelEvent(QWheelEvent *event)
     if (event->angleDelta().y() > 0)
     {
         zoom(zoomIn, event->x(), event->y());
-        this->repaint();
+        //this->repaint();
     }
     else
     {
         zoom(zoomOut, event->x(), event->y());
-        this->repaint();
+        //this->repaint();
     }
+    this->refreshPixmap();
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -105,4 +80,37 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::refreshPixmap()
+{
+    pixmap = QPixmap(size());
+    pixmap.fill(Qt::lightGray);
+
+    QPainter painter(&pixmap);
+    painter.initFrom(this);
+
+   //Pontos da demanda
+   const QPointF points[4] =
+   {
+       windowToViewPort1(QPointF(-150, 30)),
+       windowToViewPort1(QPointF(-130, 40)),
+       windowToViewPort1(QPointF(-150, 50)),
+       windowToViewPort1(QPointF(-170, 40))
+   };
+
+   //Desenhando demanda
+   painter.setPen(Qt::red);
+   painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+   //painter.drawConvexPolygon(points, 4);
+   painter.drawConvexPolygon(getDemandPoints(windowToViewPort1({-130, 40})).data(), 4);
+
+   //Desenhando reservoir
+   painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
+   painter.setPen(QColor(20, 170, 255));
+   //painter.drawConvexPolygon(points2, 3);
+   painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 40})).data(), 3);
+
+
+    update();
 }
