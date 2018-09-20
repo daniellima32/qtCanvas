@@ -26,6 +26,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
 
 }
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+    this->refreshPixmap();
+}
+
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::RightButton)

@@ -20,6 +20,7 @@ public:
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
     void refreshPixmap();
+    void resizeEvent(QResizeEvent* event);
 private:
     Ui::MainWindow *ui;
     bool pan = false;
