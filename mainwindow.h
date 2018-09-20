@@ -28,6 +28,8 @@ private:
     bool controlIsDown = false;
     QPixmap pixmap;
     QPointF lastMouseWindowPosition = {0.0, 0.0};
+
+    std::vector<QPointF> selectedRect;
 };
 
 #endif // MAINWINDOW_H

@@ -158,4 +158,38 @@ void zoom(float zoomFactor, double x, double y)
 
 }
 
+QRect getRect (QPointF p1, QPointF p2)
+{
+    if (
+            (p1.x() < p2.x() && p1.y() == p2.y()) ||
+            (p1.x() == p2.x() && p1.y() > p2.y()) ||
+            (p1.x() < p2.x() && p1.y() > p2.y())
+       )
+    {
+        return QRect(p1.x(), p1.y(), p2.x() - p1.x(), p1.y() - p2.y());
+    }
+    else if (
+             (p2.x() < p1.x() && p2.y() == p1.y()) ||
+             (p2.x() == p1.x() && p2.y() > p1.y()) ||
+             (p2.x() < p1.x() && p2.y() > p1.y())
+             )
+    {
+        return QRect(p2.x(), p2.y(), p1.x() - p2.x(), p2.y() - p1.y());
+    }
+    else if (
+             p1.x() < p2.x() && p2.y() > p1.y()
+             )
+    {
+        return QRect(p1.x(), p2.y(), p2.x() - p1.x(), p2.y() - p1.y());
+    }
+    else if (
+             p2.x() < p1.x() && p1.y() > p2.y()
+             )
+    {
+        return QRect(p2.x(), p1.y(), p1.x() - p2.x(), p1.y() - p2.y());
+    }
+
+    QRect(p1.x(), p1.y(), p2.x() - p1.x(), p1.y() - p2.y());
+}
+
 #endif // TRANSFORMATION_H

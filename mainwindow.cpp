@@ -38,9 +38,9 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
-
 {
-
+    selectedRect.clear(); //Apaga a indicação de possível região selecionada
+    this->refreshPixmap();
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
@@ -50,13 +50,21 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
+    QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
     if (event->buttons() == Qt::RightButton)
     {
-        QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
         QPointF diff = {lastMouseWindowPosition.x() - windowPos.x(), lastMouseWindowPosition.y() - windowPos.y()}; //better
         translateRect(diff, transformation::window);
-        this->refreshPixmap();
     }
+    else if (event->buttons() == Qt::LeftButton)
+    {
+        selectedRect.clear();
+        //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
+        selectedRect.push_back(lastMouseWindowPosition);
+        selectedRect.push_back(windowPos);
+
+    }
+    this->refreshPixmap();
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
@@ -77,9 +85,10 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
+    lastMouseWindowPosition = windowPos;
     if (event->buttons() == Qt::RightButton)
     {
-        lastMouseWindowPosition = windowPos;
+        //lastMouseWindowPosition = windowPos;
     }
     else if (event->buttons() == Qt::LeftButton)
     {
@@ -148,6 +157,22 @@ void MainWindow::refreshPixmap()
             }
             painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({el.point})).data(), 3);
         }
+    }
+
+    //Checar se existe retangulo sendo selecionado
+    if (selectedRect.size() == 2)
+    {
+        //Desenhar retângulo
+        painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+        painter.setPen(Qt::blue);
+
+        //origin tem que ter o menorx e maiory
+
+        QPointF origin = windowToViewPort1(selectedRect[0]);
+        QPointF final = windowToViewPort1(selectedRect[1]);
+        std::vector<QPointF> points = { {origin.x(), origin.y()}, {origin.x() + final.x(), origin.y()},
+                                        {origin.x() + final.x(), origin.y() + final.y()}, {origin.x(), origin.y() + final.y()}};
+        painter.drawPolygon(points.data(), 4);
     }
 
     update();
