@@ -21,6 +21,22 @@ void MainWindow::paintEvent(QPaintEvent *event)
     painter.drawPixmap(event->rect(), this->pixmap);
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Control)
+    {
+        controlIsDown = true;
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Control)
+    {
+        controlIsDown = false;
+    }
+}
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 {
@@ -75,7 +91,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             }
             else
             {
-                element.isSelected = false;
+                //se control não está pressionado
+                if (!controlIsDown) element.isSelected = false;
             }
         }
     }

@@ -21,9 +21,11 @@ public:
     void wheelEvent(QWheelEvent *event);
     void refreshPixmap();
     void resizeEvent(QResizeEvent* event);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 private:
     Ui::MainWindow *ui;
-    bool pan = false;
+    bool controlIsDown = false;
     QPixmap pixmap;
     QPointF lastMouseWindowPosition = {0.0, 0.0};
 };
