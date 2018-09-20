@@ -158,38 +158,14 @@ void zoom(float zoomFactor, double x, double y)
 
 }
 
-QRect getRect (QPointF p1, QPointF p2)
+std::vector<QPointF> getRectPoints (QPointF origin, QPointF final)
 {
-    if (
-            (p1.x() < p2.x() && p1.y() == p2.y()) ||
-            (p1.x() == p2.x() && p1.y() > p2.y()) ||
-            (p1.x() < p2.x() && p1.y() > p2.y())
-       )
-    {
-        return QRect(p1.x(), p1.y(), p2.x() - p1.x(), p1.y() - p2.y());
-    }
-    else if (
-             (p2.x() < p1.x() && p2.y() == p1.y()) ||
-             (p2.x() == p1.x() && p2.y() > p1.y()) ||
-             (p2.x() < p1.x() && p2.y() > p1.y())
-             )
-    {
-        return QRect(p2.x(), p2.y(), p1.x() - p2.x(), p2.y() - p1.y());
-    }
-    else if (
-             p1.x() < p2.x() && p2.y() > p1.y()
-             )
-    {
-        return QRect(p1.x(), p2.y(), p2.x() - p1.x(), p2.y() - p1.y());
-    }
-    else if (
-             p2.x() < p1.x() && p1.y() > p2.y()
-             )
-    {
-        return QRect(p2.x(), p1.y(), p1.x() - p2.x(), p1.y() - p2.y());
-    }
-
-    QRect(p1.x(), p1.y(), p2.x() - p1.x(), p1.y() - p2.y());
+    std::vector<QPointF> points = {
+                                    {origin.x(), origin.y()},
+                                    {origin.x() + (final.x() - origin.x()), origin.y()},
+                                    {origin.x() + (final.x() - origin.x()), origin.y() + (final.y() - origin.y())},
+                                    {origin.x(), origin.y() + (final.y() - origin.y())}};
+    return points;
 }
 
 #endif // TRANSFORMATION_H

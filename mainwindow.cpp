@@ -62,7 +62,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
         selectedRect.push_back(lastMouseWindowPosition);
         selectedRect.push_back(windowPos);
-
     }
     this->refreshPixmap();
 }
@@ -163,16 +162,15 @@ void MainWindow::refreshPixmap()
     if (selectedRect.size() == 2)
     {
         //Desenhar retângulo
-        painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
-        painter.setPen(Qt::blue);
+        painter.setBrush(QBrush(Qt::transparent, Qt::SolidPattern));
+        painter.setPen(Qt::black);
 
         //origin tem que ter o menorx e maiory
 
         QPointF origin = windowToViewPort1(selectedRect[0]);
         QPointF final = windowToViewPort1(selectedRect[1]);
-        std::vector<QPointF> points = { {origin.x(), origin.y()}, {origin.x() + final.x(), origin.y()},
-                                        {origin.x() + final.x(), origin.y() + final.y()}, {origin.x(), origin.y() + final.y()}};
-        painter.drawPolygon(points.data(), 4);
+
+        painter.drawPolygon(getRectPoints(origin, final).data(), 4);
     }
 
     update();
