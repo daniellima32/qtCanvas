@@ -15,6 +15,16 @@ struct ElementsData
     bool isSelected;        //Indicação se está selecionado ou não
 };
 
+
+bool isClickedInElement(const QPointF &elementCenter,
+                        const QPointF &mousePos,
+                        float radius = 5.0)
+{
+    float distance = std::sqrt(std::pow(elementCenter.x() - mousePos.x(), 2)
+                                + std::pow(elementCenter.y() - mousePos.y(), 2));
+    return distance <= radius;
+}
+
 std::vector<ElementsData> elements =
 {
     {
@@ -25,7 +35,7 @@ std::vector<ElementsData> elements =
     {
         {-130, 60},
         ElementType::DEMAND,
-        true,
+        false,
     },
     {
         {0, 40},
@@ -35,7 +45,7 @@ std::vector<ElementsData> elements =
     {
         {0, 60},
         ElementType::RESERVOIR,
-        true
+        false
     }
 };
 

@@ -60,14 +60,26 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
+    QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
     if (event->buttons() == Qt::RightButton)
     {
-        QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
         lastMouseWindowPosition = windowPos;
     }
     else if (event->buttons() == Qt::LeftButton)
     {
+        for (auto &element : elements)
+        {
+            if (isClickedInElement(element.point, windowPos))
+            {
+                element.isSelected = !element.isSelected;
+            }
+            else
+            {
+                element.isSelected = false;
+            }
+        }
     }
+    this->refreshPixmap();
 }
 
 MainWindow::~MainWindow()
