@@ -3,6 +3,37 @@
 
 #include <QPointF>
 
+enum ElementType
+{
+    DEMAND, RESERVOIR, JUNCTION, LINK
+};
+
+struct ElementsData
+{
+    QPointF point;          //Posição GPS do nó
+    ElementType type;       //Tipo do elemento
+    bool isSelected;        //Indicação se está selecionado ou não
+};
+
+std::vector<ElementsData> elements =
+{
+    {
+        {-130, 40},
+        ElementType::DEMAND,
+        false
+    },
+    {
+        {0, 40},
+        ElementType::RESERVOIR,
+        false
+    },
+    {
+        {0, 60},
+        ElementType::RESERVOIR,
+        true
+    }
+};
+
 struct Rect
 {
     QPointF point;

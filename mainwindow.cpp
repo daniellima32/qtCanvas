@@ -83,34 +83,42 @@ void MainWindow::refreshPixmap()
     QPainter painter(&pixmap);
     painter.initFrom(this);
 
-   //Pontos da demanda
-   const QPointF points[4] =
-   {
-       windowToViewPort1(QPointF(-150, 30)),
-       windowToViewPort1(QPointF(-130, 40)),
-       windowToViewPort1(QPointF(-150, 50)),
-       windowToViewPort1(QPointF(-170, 40))
-   };
 
-   //Desenhando demanda
-   painter.setPen(Qt::red);
-   painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
-   painter.drawConvexPolygon(getDemandPoints(windowToViewPort1({-130, 40})).data(), 4);
+    for(auto el: elements)
+    {
+        //Se for demanda
+        if(el.type == ElementType::DEMAND)
+        {
+            painter.setPen(Qt::red);
+            painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+            painter.drawConvexPolygon(getDemandPoints(windowToViewPort1(el.point)).data(), 4);
+        }
+        else if (el.type == ElementType::RESERVOIR)
+        {
+            painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
+            painter.setPen(QColor(20, 170, 255)); //cor azul claro
+            painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({el.point})).data(), 3);
+        }
+    }
 
-   //Desenhando reservoir
-   painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
-   painter.setPen(QColor(20, 170, 255)); //cor azul claro
-   painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 40})).data(), 3);
+    /*
+    //Desenhando demanda
+    painter.setPen(Qt::red);
+    painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+    painter.drawConvexPolygon(getDemandPoints(windowToViewPort1({-130, 40})).data(), 4);
 
+    //Desenhando reservoir
+    painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
+    painter.setPen(QColor(20, 170, 255)); //cor azul claro
+    painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 40})).data(), 3);
 
-
-   //Desenhando segundo reservoir
-   painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
-   QPen pen(Qt::red);
-   pen.setWidth(2);
-   painter.setPen(pen);
-   painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 60})).data(), 3);
-
+    //Desenhando segundo reservoir
+    painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
+    QPen pen(Qt::red);
+    pen.setWidth(2);
+    painter.setPen(pen);
+    painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 60})).data(), 3);
+*/
 
     update();
 }
