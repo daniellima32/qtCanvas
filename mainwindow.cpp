@@ -31,8 +31,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     {
         QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
 
-        //QPointF diff = {windowPos.x() - lastMouseWindowPosition.x(), windowPos.y() - lastMouseWindowPosition.y()};
-        QPointF diff = {lastMouseWindowPosition.x() - windowPos.x(), lastMouseWindowPosition.y() - windowPos.y()};
+        //QPointF diff = {windowPos.x() - lastMouseWindowPosition.x(), windowPos.y() - lastMouseWindowPosition.y()}; //wrong
+        QPointF diff = {lastMouseWindowPosition.x() - windowPos.x(), lastMouseWindowPosition.y() - windowPos.y()}; //better
+
+
 
         //QPointF diff = {windowPos.x() - transformation::window.point.x(), windowPos.y() - transformation::window.point.y()};
         //QPointF diff = {transformation::window.point.x() - windowPos.x(), transformation::window.point.y() + windowPos.y()};
@@ -71,6 +73,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::RightButton)
     {
+        QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
+        lastMouseWindowPosition = windowPos;
     }
     else if (event->buttons() == Qt::LeftButton)
     {
