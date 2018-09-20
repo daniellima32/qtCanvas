@@ -89,36 +89,37 @@ void MainWindow::refreshPixmap()
         //Se for demanda
         if(el.type == ElementType::DEMAND)
         {
-            painter.setPen(Qt::red);
             painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+
+            if (!el.isSelected)
+            {
+                painter.setPen(Qt::red);
+            }
+            else
+            {
+                QPen pen(Qt::black);
+                pen.setWidth(2);
+                painter.setPen(pen);
+            }
             painter.drawConvexPolygon(getDemandPoints(windowToViewPort1(el.point)).data(), 4);
         }
         else if (el.type == ElementType::RESERVOIR)
         {
             painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
-            painter.setPen(QColor(20, 170, 255)); //cor azul claro
+
+            if (!el.isSelected)
+            {
+                painter.setPen(QColor(20, 170, 255)); //cor azul claro
+            }
+            else
+            {
+                QPen pen(Qt::red);
+                pen.setWidth(2);
+                painter.setPen(pen);
+            }
             painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({el.point})).data(), 3);
         }
     }
-
-    /*
-    //Desenhando demanda
-    painter.setPen(Qt::red);
-    painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
-    painter.drawConvexPolygon(getDemandPoints(windowToViewPort1({-130, 40})).data(), 4);
-
-    //Desenhando reservoir
-    painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
-    painter.setPen(QColor(20, 170, 255)); //cor azul claro
-    painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 40})).data(), 3);
-
-    //Desenhando segundo reservoir
-    painter.setBrush(QBrush(QColor(20, 170, 255), Qt::SolidPattern));
-    QPen pen(Qt::red);
-    pen.setWidth(2);
-    painter.setPen(pen);
-    painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({0, 60})).data(), 3);
-*/
 
     update();
 }
