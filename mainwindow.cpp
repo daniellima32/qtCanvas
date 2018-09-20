@@ -79,7 +79,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             {
                 el.isSelected = true;
             }
-            else
+            else if (!controlIsDown)
             {
                 el.isSelected = false;
             }
