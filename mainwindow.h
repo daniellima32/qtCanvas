@@ -25,6 +25,7 @@ public:
     void keyReleaseEvent(QKeyEvent *event);
     void dealWithcontextMenuEvent(QMouseEvent *event);
     void clickInContextMenu();
+    void mouseDoubleClickEvent(QMouseEvent *event);
 private:
     Ui::MainWindow *ui;
     bool controlIsDown = false;

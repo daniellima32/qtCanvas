@@ -36,6 +36,24 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     }
 }
 
+void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        //Deve criar um elemento temporário
+        uint nextId = getNextAvailableIDOFNode();
+        QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
+        elements.push_back(
+                        {
+                            nextId,
+                            windowPos,
+                            ElementType::DEMAND,
+                            false
+                        }
+                          );
+    }
+}
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     selectedRect.clear(); //Apaga a indicação de possível região selecionada
