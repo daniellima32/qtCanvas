@@ -19,8 +19,8 @@ struct ElementsData
 struct LinkData
 {
     uint id;                //ID que descreve esse elemento
-    QPointF origin;         //Posição GPS da origem
-    QPointF destiny;        //Posição GPS do destino
+    uint origin;            //id do nó origem
+    uint destiny;           //id do nó destino
     bool isSelected;        //Indicação se está selecionado ou não
 };
 
@@ -39,14 +39,14 @@ std::vector<LinkData> links =
 {
     {
         5,
-        {-130, 40},
-        {-130, 60},
+        0,
+        1,
         false
     },
     {
         6,
-        {-130, 60},
-        {0, 60},
+        2,
+        3,
         false
     }
 };

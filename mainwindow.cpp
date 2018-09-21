@@ -273,7 +273,15 @@ void MainWindow::refreshPixmap()
             painter.setPen(pen);
         }
 
-        painter.drawLine(windowToViewPort1({link.origin}), windowToViewPort1({link.destiny}));
+        uint idOrigin = link.origin;
+        uint idDestiny = link.destiny;
+
+        ElementsData originElement, destinyElement;
+        aquireElementByID(idOrigin, originElement);
+        aquireElementByID(idDestiny, destinyElement);
+
+        painter.drawLine(windowToViewPort1(originElement.point),
+                         windowToViewPort1(destinyElement.point));
     }
 
     //Desenhar elementos
