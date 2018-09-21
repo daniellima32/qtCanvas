@@ -4,6 +4,7 @@
 #include "transformation.h"
 #include <QMouseEvent>
 #include <iostream>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -75,22 +76,33 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
         if (someElementWasClicked(windowPos))
         {
-            //Fazer link com o novo elemento
-            uint nextLinkId = getNextAvailableIDOFLink();
-
-            //ElementsData originElement, destinyElement;
             uint id, nextId;
             aquireIDOfClickedElement(lastMouseWindowPosition, id);
             aquireIDOfClickedElement(windowPos, nextId);
 
-            links.push_back(
+            //Checar se ja existe link entre esses elementos
+            if (alreadyExistsLinksWithOriginAndDestiny(id, nextId))
             {
-                nextLinkId,
-                id,           //id da origem
-                nextId,       //id do destino
-                false
+                //Informar ao usuário que não pode inserir elemento
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("Atenção");
+                msgBox.setText("Já existe um link entre esses nós.");
+                msgBox.exec();
             }
-                        );
+            else
+            {
+                //Fazer link com o novo elemento
+                uint nextLinkId = getNextAvailableIDOFLink();
+
+                links.push_back(
+                {
+                    nextLinkId,
+                    id,           //id da origem
+                    nextId,       //id do destino
+                    false
+                }
+                            );
+            }
         }
         else
         {

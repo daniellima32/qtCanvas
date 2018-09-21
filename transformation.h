@@ -51,6 +51,16 @@ std::vector<LinkData> links =
     }
 };
 
+bool alreadyExistsLinksWithOriginAndDestiny(uint origin, uint destiny)
+{
+    for (auto link: links)
+    {
+        if (link.origin == origin && link.destiny == destiny)
+            return true;
+    }
+    return false;
+}
+
 std::vector<ElementsData> elements =
 {
     {
