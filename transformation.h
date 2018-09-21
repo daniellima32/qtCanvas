@@ -90,6 +90,28 @@ float radius = 5.0;
 //Este mapa deve salvar as posições originais dos elementos que estão sendo salvos
 std::map<uint, QPointF> mapOfOrigPosOfMovedElements;
 
+uint getNextAvailableIDOFNode()
+{
+    uint max = 0;
+    for (auto element : elements)
+    {
+        if (element.id > max) max = element.id;
+    }
+
+    if (max != 0) return max + 1;
+}
+
+uint getNextAvailableIDOFLink()
+{
+    uint max = 0;
+    for (auto link: links)
+    {
+        if (link.id > max) max = link.id;
+    }
+
+    if (max != 0) return max + 1;
+}
+
 //Checa se o clique foi feito em algum elemento da rede
 //QPointF &mousePos é dado em coordenada de mundo
 bool someElementWasClicked(const QPointF &mousePos,

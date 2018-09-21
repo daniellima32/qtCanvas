@@ -30,6 +30,7 @@ private:
     bool controlIsDown = false;
     bool drawingSelection = false;
     bool elementsBeeingMoved = false;
+    bool temporaryElementInserted = false;
     QPixmap pixmap;
     QPointF lastMouseWindowPosition = {0.0, 0.0};
     std::vector<QPointF> selectedRect;

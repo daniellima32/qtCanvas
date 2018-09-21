@@ -59,10 +59,48 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     drawingSelection = false;
     elementsBeeingMoved = false;
 
-    /*if (someElementWasClicked(windowPos) && !someElementIsSelected())
+    //Checa se um elemento temporário foi inserido
+    if (temporaryElementInserted)
     {
-        dealWithcontextMenuEvent(event);
-    }*/
+        //Deve checar se o local de saída foi sobre algum nó já exitente
+        //Se sim, deve apenas fazer uma ligação entre o ló de origem e o nó de destino
+        //e setar temporaryElementInserted=false
+
+        //Remover último elemento inserido
+        ElementsData elementCopy = elements[elements.size()-1];
+        elements.pop_back();
+        //Remover link
+        LinkData linkCopy = links[links.size()-1];
+        links.pop_back();
+
+        if (someElementWasClicked(windowPos))
+        {
+            //Fazer link com o novo elemento
+            uint nextLinkId = getNextAvailableIDOFLink();
+
+            //ElementsData originElement, destinyElement;
+            uint id, nextId;
+            aquireIDOfClickedElement(lastMouseWindowPosition, id);
+            aquireIDOfClickedElement(windowPos, nextId);
+
+            links.push_back(
+            {
+                nextLinkId,
+                id,           //id da origem
+                nextId,       //id do destino
+                false
+            }
+                        );
+        }
+        else
+        {
+            //Caso contrário, deve manter o elemento criado e setar temporaryElementInserted=false
+            elements.push_back(elementCopy);
+            links.push_back(linkCopy);
+        }
+
+        temporaryElementInserted=false;
+    }
 
     if (mapOfOrigPosOfMovedElements.size() > 0) mapOfOrigPosOfMovedElements.clear();
 
@@ -123,29 +161,78 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     }
     else if (event->buttons() == Qt::LeftButton)
     {
-        selectedRect.clear();
-        //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
-        selectedRect.push_back(lastMouseWindowPosition);
-        selectedRect.push_back(windowPos);
-
-        QPointF origin = windowToViewPort1(selectedRect[0]);
-        QPointF final = windowToViewPort1(selectedRect[1]);
-        std::vector<QPointF> vec = getRectPoints(origin, final);
-        QPoint pLeftTopViewPort = getLeftTop(vec);
-        QPoint pRightBottomViewPort = getBottomRight(vec);
-        QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
-        for (auto &el: elements)
+        if (someElementWasClicked(lastMouseWindowPosition))
         {
-            if (selectionRect.contains(el.point.x(), el.point.y()))
+            if (!temporaryElementInserted)
             {
-                el.isSelected = true;
+                //Deve criar um elemento temporário
+                uint nextId = getNextAvailableIDOFNode();
+
+                ElementsData element;
+                uint id;
+                aquireIDOfClickedElement(lastMouseWindowPosition, id);
+                aquireElementByID(id, element);
+
+                elements.push_back(
+                                {
+                                    nextId,
+                                    windowPos,
+                                    element.type,
+                                    false
+                                }
+                                  );
+
+                uint nextLinkId = getNextAvailableIDOFLink();
+                links.push_back(
+                {
+                    nextLinkId,
+                    id,
+                    nextId,
+                    false
+                }
+                            );
+
+                temporaryElementInserted = true;
             }
-            else if (!controlIsDown)
+            else
             {
-                el.isSelected = false;
+                //Alterar posição de último elemento
+                //O link é alterado automaticamente
+                ElementsData element;
+                uint id = elements[elements.size()-1].id;
+                //aquireElementByID(id, element);
+                //element.point = windowPos;
+                elements[elements.size()-1].point = windowPos;
             }
+
         }
-        drawingSelection = true;
+        else
+        {
+            //Desenhar retangulo representando a seleção
+            selectedRect.clear();
+            //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
+            selectedRect.push_back(lastMouseWindowPosition);
+            selectedRect.push_back(windowPos);
+
+            QPointF origin = windowToViewPort1(selectedRect[0]);
+            QPointF final = windowToViewPort1(selectedRect[1]);
+            std::vector<QPointF> vec = getRectPoints(origin, final);
+            QPoint pLeftTopViewPort = getLeftTop(vec);
+            QPoint pRightBottomViewPort = getBottomRight(vec);
+            QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
+            for (auto &el: elements)
+            {
+                if (selectionRect.contains(el.point.x(), el.point.y()))
+                {
+                    el.isSelected = true;
+                }
+                else if (!controlIsDown)
+                {
+                    el.isSelected = false;
+                }
+            }
+            drawingSelection = true;
+        }
     }
     this->refreshPixmap();
 }
