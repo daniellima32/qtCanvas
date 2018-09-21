@@ -74,12 +74,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
     if (event->buttons() == Qt::RightButton)
     {
-        QPointF diff = {lastMouseWindowPosition.x() - windowPos.x(), lastMouseWindowPosition.y() - windowPos.y()}; //better
-        translateRect(diff, transformation::window);
-    }
-    else if (event->buttons() == Qt::LeftButton)
-    {
-        //Deve descobrir se deve mover elementos ou desenhar retangulo
+        //Deve descobrir se deve mover elementos ou fazer pan de window
 
         //Para mover elementos o último presionar deve ter sido em um nó
         //e algum elemento deve estar selecionado
@@ -105,50 +100,47 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             {
                 if (el.isSelected)
                 {
-                    //Embora a alteração seja feita em world
-                    //Observe que a translação deve ser feita usando a dimensão de viewport
-                    //Não deve ser com a dimensão de world
                     QPointF translateFactor (windowPos.x() - lastMouseWindowPosition.x(),
                                              windowPos.y() - lastMouseWindowPosition.y());
-
-                    /*QPointF viewPortPos = QPointF{event->x(), event->y()};
-                    QPointF lastMouseViewPortPos = windowToViewPort1(lastMouseWindowPosition);
-                    QPointF translateFactor (viewPortPos.x() - lastMouseViewPortPos.x(),
-                                             viewPortPos.y() - lastMouseViewPortPos.y());*/
 
                     el.point = mapOfOrigPosOfMovedElements[el.id];   //Restaura valor original
                     translatePoint(translateFactor, el.point);       //transladando ponto
                 }
             }
-        }
+        } // fim de mover elementos
         else
         {
-            //Deve desenhar retangulo
+            //Fazer pan de window
 
-            selectedRect.clear();
-            //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
-            selectedRect.push_back(lastMouseWindowPosition);
-            selectedRect.push_back(windowPos);
-
-            QPointF origin = windowToViewPort1(selectedRect[0]);
-            QPointF final = windowToViewPort1(selectedRect[1]);
-            std::vector<QPointF> vec = getRectPoints(origin, final);
-            QPoint pLeftTopViewPort = getLeftTop(vec);
-            QPoint pRightBottomViewPort = getBottomRight(vec);
-            QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
-            for (auto &el: elements)
-            {
-                if (selectionRect.contains(el.point.x(), el.point.y()))
-                {
-                    el.isSelected = true;
-                }
-                else if (!controlIsDown)
-                {
-                    el.isSelected = false;
-                }
-            }
-            drawingSelection = true;
+            QPointF diff = {lastMouseWindowPosition.x() - windowPos.x(), lastMouseWindowPosition.y() - windowPos.y()}; //better
+            translateRect(diff, transformation::window);
         }
+    }
+    else if (event->buttons() == Qt::LeftButton)
+    {
+        selectedRect.clear();
+        //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
+        selectedRect.push_back(lastMouseWindowPosition);
+        selectedRect.push_back(windowPos);
+
+        QPointF origin = windowToViewPort1(selectedRect[0]);
+        QPointF final = windowToViewPort1(selectedRect[1]);
+        std::vector<QPointF> vec = getRectPoints(origin, final);
+        QPoint pLeftTopViewPort = getLeftTop(vec);
+        QPoint pRightBottomViewPort = getBottomRight(vec);
+        QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
+        for (auto &el: elements)
+        {
+            if (selectionRect.contains(el.point.x(), el.point.y()))
+            {
+                el.isSelected = true;
+            }
+            else if (!controlIsDown)
+            {
+                el.isSelected = false;
+            }
+        }
+        drawingSelection = true;
     }
     this->refreshPixmap();
 }
