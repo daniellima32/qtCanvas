@@ -73,6 +73,50 @@ bool someElementWasClicked(const QPointF &mousePos,
     return false;
 }
 
+bool aquireIDOfClickedElement(const QPointF &mousePos,
+                              uint& id,
+                           float radius = 5.0)
+{
+    for (auto &element : elements)
+    {
+        if (isClickedInElement(element.point, mousePos))
+        {
+            id = element.id;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool aquireElementByID(const uint id, ElementsData& el)
+{
+    for (auto element : elements)
+    {
+        if (element.id == id)
+        {
+            el = element;
+            return true;
+        }
+    }
+    return false;
+}
+
+void changeElementType(uint id, ElementType newType)
+{
+    for (auto &el: elements)
+    {
+        if (el.id == id)
+        {
+            if (newType != el.type)
+            {
+                el.type = newType;
+            }
+        }
+    }
+
+    //element.type = newType;
+}
+
 //Checa se algum elemento está selecionado
 bool someElementIsSelected()
 {

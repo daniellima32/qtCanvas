@@ -59,6 +59,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     drawingSelection = false;
     elementsBeeingMoved = false;
 
+    /*if (someElementWasClicked(windowPos) && !someElementIsSelected())
+    {
+        dealWithcontextMenuEvent(event);
+    }*/
+
     if (mapOfOrigPosOfMovedElements.size() > 0) mapOfOrigPosOfMovedElements.clear();
 
     this->refreshPixmap();
@@ -145,6 +150,57 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     this->refreshPixmap();
 }
 
+void MainWindow::clickInContextMenu()
+{
+    int a = 10;
+}
+
+//void MainWindow::dealWithcontextMenuEvent(QContextMenuEvent *event)
+void MainWindow::dealWithcontextMenuEvent(QMouseEvent *event)
+{
+    QMenu menu(this);
+    QPointF viewPortPos (event->x(), event->y());
+    QPointF windowPos = viewPortToWindow1(viewPortPos);
+
+    //Descobrir se clicou sobre algum elemento
+    if (someElementWasClicked(windowPos))
+    {
+        ElementsData element;
+        uint id;
+        aquireIDOfClickedElement(windowPos, id);
+        aquireElementByID(id, element);
+
+        if (element.type != ElementType::DEMAND)
+        {
+            QAction* actDemanda = new QAction(tr("&Demanda"), this);
+            menu.addAction(actDemanda);
+            connect(actDemanda, &QAction::triggered, this, [=](){
+                changeElementType(id, ElementType::DEMAND);
+            });
+        }
+
+        if (element.type != ElementType::RESERVOIR)
+        {
+            QAction* actReservoir = new QAction(tr("&Reservoir"), this);
+            menu.addAction(actReservoir);
+            connect(actReservoir, &QAction::triggered, this, [=](){
+                changeElementType(id, ElementType::RESERVOIR);
+            });
+        }
+
+        if (element.type != ElementType::JUNCTION)
+        {
+            QAction* actJunction = new QAction(tr("&Junction"), this);
+            menu.addAction(actJunction);
+            connect(actJunction, &QAction::triggered, this, [=](){
+                changeElementType(id, ElementType::JUNCTION);
+            });
+        }
+
+        menu.exec(event->globalPos());
+    }
+}
+
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
     static float zoomIn = 0.9;
@@ -166,7 +222,10 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     lastMouseWindowPosition = windowPos;
     if (event->buttons() == Qt::RightButton)
     {
-
+        if (someElementWasClicked(windowPos) && !someElementIsSelected())
+        {
+            dealWithcontextMenuEvent(event);
+        }
     }
     /*else if (event->buttons() == Qt::LeftButton)
     {

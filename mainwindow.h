@@ -23,6 +23,8 @@ public:
     void resizeEvent(QResizeEvent* event);
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    void dealWithcontextMenuEvent(QMouseEvent *event);
+    void clickInContextMenu();
 private:
     Ui::MainWindow *ui;
     bool controlIsDown = false;
@@ -30,7 +32,6 @@ private:
     bool elementsBeeingMoved = false;
     QPixmap pixmap;
     QPointF lastMouseWindowPosition = {0.0, 0.0};
-
     std::vector<QPointF> selectedRect;
 };
 
