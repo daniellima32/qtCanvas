@@ -15,7 +15,8 @@ struct ElementsData
     bool isSelected;        //Indicação se está selecionado ou não
 };
 
-
+//Checa se o clique foi feito em um elemento especifico
+//QPointF &mousePos é dado em coordenada de mundo
 bool isClickedInElement(const QPointF &elementCenter,
                         const QPointF &mousePos,
                         float radius = 5.0)
@@ -48,6 +49,34 @@ std::vector<ElementsData> elements =
         false
     }
 };
+
+//Checa se o clique foi feito em algum elemento da rede
+//QPointF &mousePos é dado em coordenada de mundo
+bool someElementWasClicked(const QPointF &mousePos,
+                           float radius = 5.0)
+{
+    for (auto &element : elements)
+    {
+        if (isClickedInElement(element.point, mousePos))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+//Checa se algum elemento está selecionado
+bool someElementIsSelected()
+{
+    for (auto &element : elements)
+    {
+        if (element.isSelected)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
 struct Rect
 {

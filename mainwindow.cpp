@@ -41,20 +41,23 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
     //Mudando local do release
     QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
-    for (auto &element : elements)
+    if (!elementsBeeingMoved)
     {
-        if (isClickedInElement(element.point, windowPos))
+        for (auto &element : elements)
         {
-            element.isSelected = !element.isSelected;
-        }
-        else
-        {
-            //se control não está pressionado
-            if (!drawingSelection && !controlIsDown) element.isSelected = false;
+            if (isClickedInElement(element.point, windowPos))
+            {
+                element.isSelected = !element.isSelected;
+            }
+            else
+            {
+                //se control não está pressionado
+                if (!drawingSelection && !controlIsDown) element.isSelected = false;
+            }
         }
     }
-
     drawingSelection = false;
+    elementsBeeingMoved = false;
     this->refreshPixmap();
 }
 
@@ -73,29 +76,45 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     }
     else if (event->buttons() == Qt::LeftButton)
     {
-        selectedRect.clear();
-        //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
-        selectedRect.push_back(lastMouseWindowPosition);
-        selectedRect.push_back(windowPos);
+        //Deve descobrir se deve mover elementos ou desenhar retangulo
 
-        QPointF origin = windowToViewPort1(selectedRect[0]);
-        QPointF final = windowToViewPort1(selectedRect[1]);
-        std::vector<QPointF> vec = getRectPoints(origin, final);
-        QPoint pLeftTopViewPort = getLeftTop(vec);
-        QPoint pRightBottomViewPort = getBottomRight(vec);
-        QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
-        for (auto &el: elements)
+        //Para mover elementos o último presionar deve ter sido em um nó
+        //e algum elemento deve estar selecionado
+        if (someElementWasClicked(lastMouseWindowPosition) &&
+                someElementIsSelected())
         {
-            if (selectionRect.contains(el.point.x(), el.point.y()))
-            {
-                el.isSelected = true;
-            }
-            else if (!controlIsDown)
-            {
-                el.isSelected = false;
-            }
+            //Deve mover elementos
+            int a = 10;
+            elementsBeeingMoved = true;
         }
-        drawingSelection = true;
+        else
+        {
+            //Deve desenhar retangulo
+
+            selectedRect.clear();
+            //Desenhar rectangulo saindo de lastMouseWindowPosition ate posição atual em window
+            selectedRect.push_back(lastMouseWindowPosition);
+            selectedRect.push_back(windowPos);
+
+            QPointF origin = windowToViewPort1(selectedRect[0]);
+            QPointF final = windowToViewPort1(selectedRect[1]);
+            std::vector<QPointF> vec = getRectPoints(origin, final);
+            QPoint pLeftTopViewPort = getLeftTop(vec);
+            QPoint pRightBottomViewPort = getBottomRight(vec);
+            QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
+            for (auto &el: elements)
+            {
+                if (selectionRect.contains(el.point.x(), el.point.y()))
+                {
+                    el.isSelected = true;
+                }
+                else if (!controlIsDown)
+                {
+                    el.isSelected = false;
+                }
+            }
+            drawingSelection = true;
+        }
     }
     this->refreshPixmap();
 }
