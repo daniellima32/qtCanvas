@@ -55,7 +55,10 @@ bool alreadyExistsLinksWithOriginAndDestiny(uint origin, uint destiny)
 {
     for (auto link: links)
     {
-        if (link.origin == origin && link.destiny == destiny)
+        if (
+                (link.origin == origin && link.destiny == destiny) ||
+                (link.destiny == origin && link.destiny == origin)
+            )
             return true;
     }
     return false;
