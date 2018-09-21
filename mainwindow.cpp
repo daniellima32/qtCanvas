@@ -155,7 +155,6 @@ void MainWindow::clickInContextMenu()
     int a = 10;
 }
 
-//void MainWindow::dealWithcontextMenuEvent(QContextMenuEvent *event)
 void MainWindow::dealWithcontextMenuEvent(QMouseEvent *event)
 {
     QMenu menu(this);
