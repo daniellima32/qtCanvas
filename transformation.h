@@ -10,6 +10,7 @@ enum ElementType
 
 struct ElementsData
 {
+    uint id;                //ID que descreve esse elemento
     QPointF point;          //Posição GPS do nó
     ElementType type;       //Tipo do elemento
     bool isSelected;        //Indicação se está selecionado ou não
@@ -29,26 +30,33 @@ bool isClickedInElement(const QPointF &elementCenter,
 std::vector<ElementsData> elements =
 {
     {
+        0,
         {-130, 40},
         ElementType::DEMAND,
         false
     },
     {
+        1,
         {-130, 60},
         ElementType::DEMAND,
         false,
     },
     {
+        2,
         {0, 40},
         ElementType::RESERVOIR,
         false
     },
     {
+        3,
         {0, 60},
         ElementType::RESERVOIR,
         false
     }
 };
+
+//Este mapa deve salvar as posições originais dos elementos que estão sendo salvos
+std::map<uint, QPointF> mapOfOrigPosOfMovedElements;
 
 //Checa se o clique foi feito em algum elemento da rede
 //QPointF &mousePos é dado em coordenada de mundo

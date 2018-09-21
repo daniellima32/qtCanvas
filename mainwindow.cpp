@@ -58,6 +58,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     }
     drawingSelection = false;
     elementsBeeingMoved = false;
+
+    if (mapOfOrigPosOfMovedElements.size() > 0) mapOfOrigPosOfMovedElements.clear();
+
     this->refreshPixmap();
 }
 
@@ -80,12 +83,43 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
         //Para mover elementos o último presionar deve ter sido em um nó
         //e algum elemento deve estar selecionado
-        if (someElementWasClicked(lastMouseWindowPosition) &&
+        if ((someElementWasClicked(lastMouseWindowPosition) || elementsBeeingMoved) &&
                 someElementIsSelected())
         {
             //Deve mover elementos
-            int a = 10;
             elementsBeeingMoved = true;
+            //Deve salvar as posições originais dos elementos movidos caso não tenham sido salvas ainda
+            if (mapOfOrigPosOfMovedElements.size() == 0)
+            {
+                for (auto &el: elements)
+                {
+                    if (el.isSelected)
+                    {
+                        mapOfOrigPosOfMovedElements[el.id] = el.point;
+                    }
+                }
+            }
+
+            //Deve transladar os pontos selecionados
+            for (auto &el: elements)
+            {
+                if (el.isSelected)
+                {
+                    //Embora a alteração seja feita em world
+                    //Observe que a translação deve ser feita usando a dimensão de viewport
+                    //Não deve ser com a dimensão de world
+                    QPointF translateFactor (windowPos.x() - lastMouseWindowPosition.x(),
+                                             windowPos.y() - lastMouseWindowPosition.y());
+
+                    /*QPointF viewPortPos = QPointF{event->x(), event->y()};
+                    QPointF lastMouseViewPortPos = windowToViewPort1(lastMouseWindowPosition);
+                    QPointF translateFactor (viewPortPos.x() - lastMouseViewPortPos.x(),
+                                             viewPortPos.y() - lastMouseViewPortPos.y());*/
+
+                    el.point = mapOfOrigPosOfMovedElements[el.id];   //Restaura valor original
+                    translatePoint(translateFactor, el.point);       //transladando ponto
+                }
+            }
         }
         else
         {
@@ -222,6 +256,7 @@ void MainWindow::refreshPixmap()
         QPointF final = windowToViewPort1(selectedRect[1]);
 
         painter.drawPolygon(getRectPoints(origin, final).data(), 4);
+        selectedRect.clear();
     }
 
     update();
