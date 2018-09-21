@@ -13,8 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->refreshPixmap();
 }
 
-
-
 void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
@@ -80,10 +78,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         selectedRect.push_back(lastMouseWindowPosition);
         selectedRect.push_back(windowPos);
 
-        //atualizar seleção de elementos
-        //QPointF origin = windowToViewPort1(selectedRect[0]);
-        //QPointF final = windowToViewPort1(selectedRect[1]);
-
         QPointF origin = windowToViewPort1(selectedRect[0]);
         QPointF final = windowToViewPort1(selectedRect[1]);
         std::vector<QPointF> vec = getRectPoints(origin, final);
@@ -127,7 +121,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     lastMouseWindowPosition = windowPos;
     if (event->buttons() == Qt::RightButton)
     {
-        //lastMouseWindowPosition = windowPos;
+
     }
     /*else if (event->buttons() == Qt::LeftButton)
     {
@@ -204,8 +198,6 @@ void MainWindow::refreshPixmap()
         //Desenhar retângulo
         painter.setBrush(QBrush(Qt::transparent, Qt::SolidPattern));
         painter.setPen(Qt::black);
-
-        //origin tem que ter o menorx e maiory
 
         QPointF origin = windowToViewPort1(selectedRect[0]);
         QPointF final = windowToViewPort1(selectedRect[1]);
