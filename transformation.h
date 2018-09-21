@@ -16,6 +16,14 @@ struct ElementsData
     bool isSelected;        //Indicação se está selecionado ou não
 };
 
+struct LinkData
+{
+    uint id;                //ID que descreve esse elemento
+    QPointF origin;         //Posição GPS da origem
+    QPointF destiny;        //Posição GPS do destino
+    bool isSelected;        //Indicação se está selecionado ou não
+};
+
 //Checa se o clique foi feito em um elemento especifico
 //QPointF &mousePos é dado em coordenada de mundo
 bool isClickedInElement(const QPointF &elementCenter,
@@ -26,6 +34,22 @@ bool isClickedInElement(const QPointF &elementCenter,
                                 + std::pow(elementCenter.y() - mousePos.y(), 2));
     return distance <= radius;
 }
+
+std::vector<LinkData> links =
+{
+    {
+        5,
+        {-130, 40},
+        {-130, 60},
+        false
+    },
+    {
+        6,
+        {-130, 60},
+        {0, 60},
+        false
+    }
+};
 
 std::vector<ElementsData> elements =
 {

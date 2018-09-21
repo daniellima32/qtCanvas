@@ -257,7 +257,26 @@ void MainWindow::refreshPixmap()
     QPainter painter(&pixmap);
     painter.initFrom(this);
 
+    //Desenhar links
+    for(auto link: links)
+    {
+        painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
 
+        if (!link.isSelected)
+        {
+            painter.setPen(Qt::blue);
+        }
+        else
+        {
+            QPen pen(Qt::red);
+            pen.setWidth(2);
+            painter.setPen(pen);
+        }
+
+        painter.drawLine(windowToViewPort1({link.origin}), windowToViewPort1({link.destiny}));
+    }
+
+    //Desenhar elementos
     for(auto el: elements)
     {
         //Se for demanda
