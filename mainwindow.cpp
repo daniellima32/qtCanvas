@@ -40,6 +40,23 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     selectedRect.clear(); //Apaga a indicação de possível região selecionada
+
+    //Mudando local do release
+    QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
+    for (auto &element : elements)
+    {
+        if (isClickedInElement(element.point, windowPos))
+        {
+            element.isSelected = !element.isSelected;
+        }
+        else
+        {
+            //se control não está pressionado
+            if (!drawingSelection && !controlIsDown) element.isSelected = false;
+        }
+    }
+
+    drawingSelection = false;
     this->refreshPixmap();
 }
 
@@ -84,6 +101,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                 el.isSelected = false;
             }
         }
+        drawingSelection = true;
     }
     this->refreshPixmap();
 }
@@ -111,7 +129,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     {
         //lastMouseWindowPosition = windowPos;
     }
-    else if (event->buttons() == Qt::LeftButton)
+    /*else if (event->buttons() == Qt::LeftButton)
     {
         for (auto &element : elements)
         {
@@ -125,7 +143,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
                 if (!controlIsDown) element.isSelected = false;
             }
         }
-    }
+    }*/
     this->refreshPixmap();
 }
 

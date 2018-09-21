@@ -26,6 +26,7 @@ public:
 private:
     Ui::MainWindow *ui;
     bool controlIsDown = false;
+    bool drawingSelection = false;
     QPixmap pixmap;
     QPointF lastMouseWindowPosition = {0.0, 0.0};
 
