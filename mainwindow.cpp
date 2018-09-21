@@ -293,6 +293,23 @@ void MainWindow::refreshPixmap()
             }
             painter.drawConvexPolygon(getReservoirPoints(windowToViewPort1({el.point})).data(), 3);
         }
+        else if (el.type == ElementType::JUNCTION)
+        {
+            painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+
+            if (!el.isSelected)
+            {
+                painter.setPen(Qt::blue);
+            }
+            else
+            {
+                QPen pen(Qt::red);
+                pen.setWidth(2);
+                painter.setPen(pen);
+            }
+
+            painter.drawEllipse (windowToViewPort1({el.point}), 2*radius, 2*radius);
+        }
     }
 
     //Checar se existe retangulo sendo selecionado

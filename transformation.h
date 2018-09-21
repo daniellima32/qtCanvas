@@ -52,8 +52,16 @@ std::vector<ElementsData> elements =
         {0, 60},
         ElementType::RESERVOIR,
         false
+    },
+    {
+        4,
+        {-80, 40},
+        ElementType::JUNCTION,
+        false
     }
 };
+
+float radius = 5.0;
 
 //Este mapa deve salvar as posições originais dos elementos que estão sendo salvos
 std::map<uint, QPointF> mapOfOrigPosOfMovedElements;
