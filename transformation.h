@@ -2,6 +2,7 @@
 #define TRANSFORMATION_H
 
 #include <QPointF>
+#include <QRect>
 
 enum ElementType
 {
@@ -23,6 +24,17 @@ struct LinkData
     uint destiny;           //id do nó destino
     bool isSelected;        //Indicação se está selecionado ou não
 };
+
+bool isPointOfLink(const QPointF &linkOrigin,
+                   const QPointF &linkDestiny,
+                   const QPointF &point)
+{
+    //Verificar se link está no quadrilátero definido pelos pontos
+    //Isso faz com que se elimine da verificação os pontos externos
+    QRectF rect (linkOrigin, linkDestiny);
+    return rect.contains(point);
+}
+
 
 //Checa se o clique foi feito em um elemento especifico
 //QPointF &mousePos é dado em coordenada de mundo

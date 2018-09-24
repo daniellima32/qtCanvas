@@ -114,11 +114,34 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
             if (isClickedInElement(element.point, windowPos))
             {
                 element.isSelected = !element.isSelected;
+                //Definir ação
+                //Após descobrir que esse foi o elemento selecionado, sai da busca
+                //break;
             }
             else
             {
                 //se control não está pressionado
                 if (!drawingSelection && !controlIsDown) element.isSelected = false;
+            }
+        }
+
+
+        ElementsData origin, destiny;
+        for (auto &link: links)
+        {
+            //Descobrir origem
+            aquireElementByID(link.origin, origin);
+            //Descobrir destino
+            aquireElementByID(link.destiny, destiny);
+
+
+            //HERE
+            bool ret = isPointOfLink(origin.point, destiny.point, windowPos);
+            if (ret) link.isSelected = !link.isSelected;
+            else
+            {
+                //se control não está pressionado
+                if (!drawingSelection && !controlIsDown) link.isSelected = false;
             }
         }
     }
@@ -308,6 +331,26 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                     el.isSelected = false;
                 }
             }
+
+            ElementsData originLink, destinyLink;
+            //Fazer seleção dos links
+            for (auto &link: links)
+            {
+                //Descobrir origem
+                aquireElementByID(link.origin, originLink);
+                //Descobrir destino
+                aquireElementByID(link.destiny, destinyLink);
+                if (selectionRect.contains(originLink.point.x(), originLink.point.y()) &&
+                        selectionRect.contains(destinyLink.point.x(), destinyLink.point.y()))
+                {
+                    link.isSelected = true;
+                }
+                else if (!controlIsDown)
+                {
+                    link.isSelected = false;
+                }
+            }
+
             drawingSelection = true;
         }
     }
