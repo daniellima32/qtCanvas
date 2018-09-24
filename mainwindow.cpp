@@ -109,14 +109,14 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
     if (!elementsBeeingMoved)
     {
+        ElementsData el;
+        bool foundEl = aquireClickedElement(windowPos, el);
         for (auto &element : elements)
         {
-            if (isClickedInElement(element.point, windowPos))
+            //if (isClickedInElement(element.point, windowPos))
+            if (foundEl && element.id == el.id)
             {
                 element.isSelected = !element.isSelected;
-                //Definir ação
-                //Após descobrir que esse foi o elemento selecionado, sai da busca
-                //break;
             }
             else
             {
@@ -125,22 +125,29 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
             }
         }
 
-
-        ElementsData origin, destiny;
-        for (auto &link: links)
+        if (!foundEl)
         {
-            //Descobrir origem
-            aquireElementByID(link.origin, origin);
-            //Descobrir destino
-            aquireElementByID(link.destiny, destiny);
+            LinkData l;
+            bool ret = aquireClickedLink(windowPos, l);
 
-            //HERE
-            bool ret = isPointOfLink(origin.point, destiny.point, windowPos);
-            if (ret) link.isSelected = !link.isSelected;
-            else
+            for (auto &link: links)
             {
-                //se control não está pressionado
-                if (!drawingSelection && !controlIsDown) link.isSelected = false;
+                if (ret && link.id == l.id) link.isSelected = !link.isSelected;
+                else
+                {
+                    //se control não está pressionado
+                    if (!drawingSelection && !controlIsDown) link.isSelected = false;
+                }
+            }
+        }
+        else
+        {
+            if (!drawingSelection && !controlIsDown)
+            {
+                for (auto &link: links)
+                {
+                     link.isSelected = false;
+                }
             }
         }
     }

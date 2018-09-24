@@ -361,6 +361,21 @@ bool aquireIDOfClickedElement(const QPointF &mousePos,
     return false;
 }
 
+bool aquireClickedElement(const QPointF &mousePos,
+                          ElementsData &el,
+                          float radius = 2.5)
+{
+    for (auto &element : elements)
+    {
+        if (isClickedInElement(element.point, mousePos, radius))
+        {
+            el = element;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool aquireElementByID(const uint id, ElementsData& el)
 {
     for (auto element : elements)
@@ -369,6 +384,26 @@ bool aquireElementByID(const uint id, ElementsData& el)
         {
             el = element;
             return true;
+        }
+    }
+    return false;
+}
+
+bool aquireClickedLink(const QPointF &mousePos, LinkData &l)
+{
+    ElementsData origin, destiny;
+    bool ret1, ret2;
+    for (auto &link : links)
+    {
+        ret1 = aquireElementByID(link.origin, origin);
+        ret2 = aquireElementByID(link.destiny, destiny);
+        if (ret1 && ret2)
+        {
+            if(isPointOfLink(origin.point, destiny.point, mousePos))
+            {
+                l = link;
+                return true;
+            }
         }
     }
     return false;
