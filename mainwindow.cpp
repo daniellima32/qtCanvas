@@ -34,6 +34,53 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     {
         controlIsDown = false;
     }
+    else if (event->key() == Qt::Key_D ||           //Usarei a tecla d para deletar
+             event->key() == Qt::Key_Delete)        //Usarei a tecla delete para deletar
+    {
+        ElementsData origin, destiny;
+        //Descobrir se existem elementos origem e destino a ser removidos
+        //e o link entre eles não selecionado
+        for (auto link: links)
+        {
+            if (!link.isSelected) //Se o link não está selecionado
+            {
+                //Descobrir origem
+                aquireElementByID(link.origin, origin);
+                //Descobrir destino
+                aquireElementByID(link.destiny, destiny);
+
+                if (origin.isSelected || destiny.isSelected)
+                {
+                    //Informar ao usuário que não pode fazer essa exclusão
+                    QMessageBox msgBox;
+                    msgBox.setWindowTitle("Atenção");
+                    msgBox.setText("Não é permitido remover as extremidades de um link sem remover o link.");
+                    msgBox.exec();
+                    return;
+                }
+            }
+        }
+
+        for (size_t index = 0; index < links.size(); ++index)
+        {
+            if (links[index].isSelected)
+            {
+                links.erase(links.begin()+index);
+            }
+        }
+
+        for (size_t index = 0; index < elements.size(); ++index)
+        {
+            if (elements[index].isSelected)
+            {
+                elements.erase(elements.begin()+index);
+                index--; //Esse index-- é usado porque um novo elemento de indice index
+                //será atribuído pela função erase
+            }
+        }
+
+        this->refreshPixmap();
+    }
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
