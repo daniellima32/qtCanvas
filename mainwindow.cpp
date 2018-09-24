@@ -134,7 +134,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
             //Descobrir destino
             aquireElementByID(link.destiny, destiny);
 
-
             //HERE
             bool ret = isPointOfLink(origin.point, destiny.point, windowPos);
             if (ret) link.isSelected = !link.isSelected;

@@ -25,6 +25,171 @@ struct LinkData
     bool isSelected;        //Indicação se está selecionado ou não
 };
 
+#define MPOINT2POINT(mpt, pt)   ((pt).x = (mpt).x, (pt).y = (mpt).y)
+#define POINT2MPOINT(pt, mpt)   ((mpt).x = (SHORT)(pt).x, (mpt).y = (SHORT)(pt).y)
+#define POINTS2VECTOR2D(pt0, pt1, vect) ((vect).x = (double)((pt1).x - (pt0).x), \
+                                         (vect).y = (double)((pt1).y - (pt0).y))
+
+typedef struct tagPOINT
+{
+    long  x;
+    long  y;
+} POINT, *PPOINT, *LPPOINT;
+
+typedef struct tagVECTOR2D
+{
+
+    double     x;
+    double     y;
+
+} VECTOR2D, *PVECTOR2D;
+
+typedef struct tagPROJECTION
+{
+
+    VECTOR2D   ttProjection;
+    VECTOR2D   ttPerpProjection;
+    double     LenProjection;
+    double     LenPerpProjection;
+
+} PROJECTION, *PPROJECTION;
+
+double vDotProduct(PVECTOR2D v0, PVECTOR2D v1)
+{
+    double dotprod;
+    dotprod = (v0 == NULL || v1 == NULL)
+              ? 0.0
+              : (v0->x * v1->x) + (v0->y * v1->y);
+    return(dotprod);
+}
+
+PVECTOR2D vSubtractVectors(PVECTOR2D v0,
+                           PVECTOR2D v1, PVECTOR2D v)
+{
+    if(v0 == NULL || v1 == NULL)
+    {
+        v = (PVECTOR2D)NULL;
+    }
+    else
+    {
+        v->x = v0->x - v1->x;
+        v->y = v0->y - v1->y;
+    }
+
+    return(v);
+}
+
+double   vVectorSquared(PVECTOR2D v0)
+{
+    double dSqLen;
+
+    if(v0 == NULL)
+    {
+        dSqLen = 0.0;
+    }
+    else
+    {
+        dSqLen = (double)(v0->x * v0->x) + (double)(v0->y * v0->y);
+    }
+
+    return (dSqLen);
+}
+
+double vVectorMagnitude(PVECTOR2D v0)
+{
+    double dMagnitude;
+
+    if(v0 == NULL)
+    {
+        dMagnitude = 0.0;
+    }
+    else
+    {
+        dMagnitude = sqrt(vVectorSquared(v0));
+    }
+
+    return (dMagnitude);
+}
+
+void vProjectAndResolve(PVECTOR2D v0, PVECTOR2D v1, PPROJECTION ppProj)
+{
+    VECTOR2D ttProjection, ttOrthogonal;
+    double proj1;
+    //
+    //obtain projection vector
+    //
+    //c = a * b
+    //    ----- b
+    //    |b|^2
+    //
+    proj1 = vDotProduct(v0, v1) / vDotProduct(v1, v1);
+    ttProjection.x = v1->x * proj1;
+    ttProjection.y = v1->y * proj1;
+    //
+    //obtain perpendicular projection : e = a - c
+    //
+    vSubtractVectors(v0, &ttProjection,
+                     &ttOrthogonal);
+    //
+    //fill PROJECTION structure with appropriate values
+    //
+    ppProj->LenProjection = vVectorMagnitude(
+                                &ttProjection);
+    ppProj->LenPerpProjection = vVectorMagnitude(
+                                    &ttOrthogonal);
+    ppProj->ttProjection.x = ttProjection.x;
+    ppProj->ttProjection.y = ttProjection.y;
+    ppProj->ttPerpProjection.x = ttOrthogonal.x;
+    ppProj->ttPerpProjection.y = ttOrthogonal.y;
+}
+
+double vDistFromPointToLine(LPPOINT pt0, LPPOINT pt1, LPPOINT ptTest)
+{
+    VECTOR2D ttLine, ttTest;
+    PROJECTION pProjection;
+    POINTS2VECTOR2D(*pt0, *pt1, ttLine);
+    POINTS2VECTOR2D(*pt0, *ptTest, ttTest);
+    vProjectAndResolve(&ttTest, &ttLine,
+                       &pProjection);
+    return(pProjection.LenPerpProjection);
+}
+
+bool HitTestLine(POINT pt0, POINT pt1,
+                 POINT ptMouse, int nWidth)
+{
+    POINT PtM;
+    VECTOR2D tt0, tt1;
+    double dist;
+    int nHalfWidth;
+    //
+    //Get the half width of the line to adjust for hit testing of wide lines.
+    //
+    nHalfWidth = (nWidth / 2 < 1) ? 1 : nWidth / 2;
+    //
+    //Convert the line into a vector using the two endpoints.
+    //
+    POINTS2VECTOR2D(pt0, pt1, tt0);
+    //
+    //Convert the mouse points (short) into a POINT structure (long).
+    //
+    MPOINT2POINT(ptMouse , PtM);
+    //
+    //Convert the line from the left endpoint to the mouse point into a vector.
+    //
+    POINTS2VECTOR2D(pt0, PtM, tt1);
+    //
+    //Obtain the distance of the point from the line.
+    //
+    dist = vDistFromPointToLine(&pt0, &pt1, &PtM);
+    //
+    //Return TRUE if the distance of the point from the line is within the width
+    //of the line
+    //
+    return (dist >= -nHalfWidth
+            && dist <= nHalfWidth);
+}
+
+
 bool isPointOfLink(const QPointF &linkOrigin,
                    const QPointF &linkDestiny,
                    const QPointF &point)
@@ -32,7 +197,25 @@ bool isPointOfLink(const QPointF &linkOrigin,
     //Verificar se link está no quadrilátero definido pelos pontos
     //Isso faz com que se elimine da verificação os pontos externos
     QRectF rect (linkOrigin, linkDestiny);
-    return rect.contains(point);
+    if (rect.contains(point))
+    {
+        POINT source, destiny, click;
+        source.x = linkOrigin.x();
+        source.y = linkOrigin.y();
+        destiny.x = linkDestiny.x();
+        destiny.y = linkDestiny.y();
+        click.x = point.x();
+        click.y = point.y();
+
+        return HitTestLine(source, destiny, click, 1);
+    }
+    else if (std::abs(linkOrigin.x() - linkDestiny.x()) < 0.0001)
+    {
+        //A função contans de QRectF não lida muito bem com precisão de doubles
+        return (std::abs(linkOrigin.x() - point.x()) < 0.5);  //Coloco a precisão de "meio pixel"
+    }
+    else
+        return false;
 }
 
 
