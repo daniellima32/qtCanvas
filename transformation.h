@@ -212,10 +212,17 @@ bool isPointOfLink(const QPointF &linkOrigin,
     else if (std::abs(linkOrigin.x() - linkDestiny.x()) < 0.0001)
     {
         //A função contans de QRectF não lida muito bem com precisão de doubles
-        return (std::abs(linkOrigin.x() - point.x()) < 0.5);  //Coloco a precisão de "meio pixel"
+        if((std::abs(linkOrigin.x() - point.x()) < 0.5))  //Coloco a precisão de "meio pixel"
+        {
+            //deve checar o eixo y
+
+            return (point.y() > linkOrigin.y() && point.y() < linkDestiny.y());
+        }
+
+        //deve checar o y tmb
     }
-    else
-        return false;
+
+    return false;
 }
 
 
