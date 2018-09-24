@@ -57,7 +57,7 @@ bool alreadyExistsLinksWithOriginAndDestiny(uint origin, uint destiny)
     {
         if (
                 (link.origin == origin && link.destiny == destiny) ||
-                (link.destiny == origin && link.destiny == origin)
+                (link.destiny == origin && link.origin == destiny)
             )
             return true;
     }
@@ -105,24 +105,28 @@ std::map<uint, QPointF> mapOfOrigPosOfMovedElements;
 
 uint getNextAvailableIDOFNode()
 {
+    if (elements.size() == 0) return 0;
+
     uint max = 0;
     for (auto element : elements)
     {
         if (element.id > max) max = element.id;
     }
 
-    if (max != 0) return max + 1;
+    return max + 1;
 }
 
 uint getNextAvailableIDOFLink()
 {
+    if (links.size() == 0) return 0;
+
     uint max = 0;
     for (auto link: links)
     {
         if (link.id > max) max = link.id;
     }
 
-    if (max != 0) return max + 1;
+    return max + 1;
 }
 
 //Checa se o clique foi feito em algum elemento da rede
@@ -132,7 +136,7 @@ bool someElementWasClicked(const QPointF &mousePos,
 {
     for (auto &element : elements)
     {
-        if (isClickedInElement(element.point, mousePos))
+        if (isClickedInElement(element.point, mousePos, radius))
         {
             return true;
         }
@@ -350,9 +354,9 @@ QPoint getLeftTop(std::vector<QPointF> vec)
 QPoint getBottomRight(std::vector<QPointF> vec)
 {
     bool valid = true;
-    for (int i = 0; i< vec.size(); i++)
+    for (size_t i = 0; i< vec.size(); i++)
     {
-        for (int j = 0; j< vec.size(); j++)
+        for (size_t j = 0; j< vec.size(); j++)
         {
             //if (!(vec[i].x()  >= vec[j].x() && vec[i].y()  <= vec[j].y()))
             if (vec[i].x()  < vec[j].x() || vec[i].y()  > vec[j].y())

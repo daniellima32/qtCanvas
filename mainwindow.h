@@ -20,11 +20,10 @@ public:
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
     void refreshPixmap();
-    void resizeEvent(QResizeEvent* event);
+    void resizeEvent(QResizeEvent*);
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
     void dealWithcontextMenuEvent(QMouseEvent *event);
-    void clickInContextMenu();
     void mouseDoubleClickEvent(QMouseEvent *event);
 private:
     Ui::MainWindow *ui;

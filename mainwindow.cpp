@@ -137,14 +137,14 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     this->refreshPixmap();
 }
 
-void MainWindow::resizeEvent(QResizeEvent* event)
+void MainWindow::resizeEvent(QResizeEvent* )
 {
     this->refreshPixmap();
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
+    QPointF windowPos = viewPortToWindow1({(float)event->x(), (float)event->y()});
     if (event->buttons() == Qt::RightButton)
     {
         //Deve descobrir se deve mover elementos ou fazer pan de window
@@ -229,7 +229,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                 //Alterar posição de último elemento
                 //O link é alterado automaticamente
                 ElementsData element;
-                uint id = elements[elements.size()-1].id;
+                //uint id = elements[elements.size()-1].id;
                 //aquireElementByID(id, element);
                 //element.point = windowPos;
                 elements[elements.size()-1].point = windowPos;
@@ -265,11 +265,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         }
     }
     this->refreshPixmap();
-}
-
-void MainWindow::clickInContextMenu()
-{
-    int a = 10;
 }
 
 void MainWindow::dealWithcontextMenuEvent(QMouseEvent *event)
