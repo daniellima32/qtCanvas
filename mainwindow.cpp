@@ -193,7 +193,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                     nextLinkId,
                     id,           //id da origem
                     nextId,       //id do destino
-                    false
+                    false,
+                    LinkType::NATURAL
                 }
                             );
             }
@@ -294,7 +295,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                     nextLinkId,
                     id,
                     nextId,
-                    false
+                    false,
+                    LinkType::NATURAL
                 }
                             );
 
@@ -403,9 +405,33 @@ void MainWindow::dealWithcontextMenuEvent(QMouseEvent *event)
                 changeElementType(id, ElementType::JUNCTION);
             });
         }
-
-        menu.exec(event->globalPos());
     }
+    else if (someLinkWasClicked(windowPos))
+    {
+        LinkData link;
+        aquireClickedLink(windowPos, link);
+        uint id = link.id;
+
+        if (link.type != LinkType::NATURAL)
+        {
+            QAction* actNat = new QAction(tr("&Natural"), this);
+            menu.addAction(actNat);
+            connect(actNat, &QAction::triggered, this, [=](){
+                changeLinkType(id, LinkType::NATURAL);
+            });
+        }
+
+        if (link.type != LinkType::ARTIFICIAL)
+        {
+            QAction* actArt = new QAction(tr("&Artificial"), this);
+            menu.addAction(actArt);
+            connect(actArt, &QAction::triggered, this, [=](){
+                changeLinkType(id, LinkType::ARTIFICIAL);
+            });
+        }
+    }
+
+    menu.exec(event->globalPos());
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
@@ -429,26 +455,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     lastMouseWindowPosition = windowPos;
     if (event->buttons() == Qt::RightButton)
     {
-        if (someElementWasClicked(windowPos) && !someElementIsSelected())
+        //if (someElementWasClicked(windowPos) && !someElementIsSelected())
+        if (someElementOrLinkWasClicked(windowPos) && !someElementIsSelected())
         {
             dealWithcontextMenuEvent(event);
         }
     }
-    /*else if (event->buttons() == Qt::LeftButton)
-    {
-        for (auto &element : elements)
-        {
-            if (isClickedInElement(element.point, windowPos))
-            {
-                element.isSelected = !element.isSelected;
-            }
-            else
-            {
-                //se control não está pressionado
-                if (!controlIsDown) element.isSelected = false;
-            }
-        }
-    }*/
+
     this->refreshPixmap();
 }
 
@@ -472,7 +485,10 @@ void MainWindow::refreshPixmap()
 
         if (!link.isSelected)
         {
-            painter.setPen(Qt::blue);
+            if (link.type == LinkType::NATURAL)
+                painter.setPen(Qt::blue);
+            else
+                painter.setPen(Qt::black);
         }
         else
         {

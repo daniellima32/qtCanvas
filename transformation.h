@@ -9,6 +9,11 @@ enum ElementType
     DEMAND, RESERVOIR, JUNCTION, LINK
 };
 
+enum LinkType
+{
+    NATURAL, ARTIFICIAL
+};
+
 struct ElementsData
 {
     uint id;                //ID que descreve esse elemento
@@ -23,6 +28,7 @@ struct LinkData
     uint origin;            //id do nó origem
     uint destiny;           //id do nó destino
     bool isSelected;        //Indicação se está selecionado ou não
+    LinkType type;
 };
 
 #define MPOINT2POINT(mpt, pt)   ((pt).x = (mpt).x, (pt).y = (mpt).y)
@@ -243,13 +249,15 @@ std::vector<LinkData> links =
         5,
         0,
         1,
-        false
+        false,
+        LinkType::NATURAL
     },
     {
         6,
         2,
         3,
-        false
+        false,
+        LinkType::ARTIFICIAL
     }
 };
 
@@ -389,6 +397,30 @@ bool aquireElementByID(const uint id, ElementsData& el)
     return false;
 }
 
+bool someLinkWasClicked(const QPointF &mousePos)
+{
+    ElementsData origin, destiny;
+    bool ret1, ret2;
+    for (auto &link : links)
+    {
+        ret1 = aquireElementByID(link.origin, origin);
+        ret2 = aquireElementByID(link.destiny, destiny);
+        if (ret1 && ret2)
+        {
+            if(isPointOfLink(origin.point, destiny.point, mousePos))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool someElementOrLinkWasClicked(const QPointF &mousePos)
+{
+    return  (someElementWasClicked(mousePos) || someLinkWasClicked(mousePos));
+}
+
 bool aquireClickedLink(const QPointF &mousePos, LinkData &l)
 {
     ElementsData origin, destiny;
@@ -421,8 +453,20 @@ void changeElementType(uint id, ElementType newType)
             }
         }
     }
+}
 
-    //element.type = newType;
+void changeLinkType(uint id, LinkType newType)
+{
+    for (auto &link: links)
+    {
+        if (link.id == id)
+        {
+            if (newType != link.type)
+            {
+                link.type = newType;
+            }
+        }
+    }
 }
 
 //Checa se algum elemento está selecionado
