@@ -42,7 +42,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
     {
         //Deve criar um elemento temporário
         uint nextId = getNextAvailableIDOFNode();
-        QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
+        QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
         elements.push_back(
                         {
                             nextId,
@@ -59,7 +59,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     selectedRect.clear(); //Apaga a indicação de possível região selecionada
 
     //Mudando local do release
-    QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
+    QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
     if (!elementsBeeingMoved)
     {
         for (auto &element : elements)
@@ -329,7 +329,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    QPointF windowPos = viewPortToWindow1({event->x(), event->y()});
+    QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
     lastMouseWindowPosition = windowPos;
     if (event->buttons() == Qt::RightButton)
     {

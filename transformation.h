@@ -150,7 +150,7 @@ bool aquireIDOfClickedElement(const QPointF &mousePos,
 {
     for (auto &element : elements)
     {
-        if (isClickedInElement(element.point, mousePos))
+        if (isClickedInElement(element.point, mousePos, radius))
         {
             id = element.id;
             return true;
@@ -332,9 +332,9 @@ std::vector<QPointF> getRectPoints (QPointF origin, QPointF final)
 QPoint getLeftTop(std::vector<QPointF> vec)
 {
     bool valid = true;
-    for (int i = 0; i< vec.size(); i++)
+    for (size_t i = 0; i< vec.size(); i++)
     {
-        for (int j = 0; j< vec.size(); j++)
+        for (size_t j = 0; j< vec.size(); j++)
         {
             //if (!(vec[i].x()  <= vec[j].x() && vec[i].y()  >= vec[j].y()))
             if (vec[i].x()  > vec[j].x() || vec[i].y()  < vec[j].y())
