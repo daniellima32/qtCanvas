@@ -504,8 +504,13 @@ void MainWindow::refreshPixmap()
         aquireElementByID(idOrigin, originElement);
         aquireElementByID(idDestiny, destinyElement);
 
+        //Desenhar a reta
         painter.drawLine(windowToViewPort1(originElement.point),
                          windowToViewPort1(destinyElement.point));
+
+        //Desenhar a seta
+        QLineF line(windowToViewPort1(originElement.point), windowToViewPort1(destinyElement.point));
+        painter.drawConvexPolygon(getArrowPoints(line).data(), 3);
     }
 
     //Desenhar elementos
