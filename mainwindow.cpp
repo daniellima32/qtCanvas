@@ -553,6 +553,8 @@ void MainWindow::refreshPixmap()
     QPainter painter(&pixmap);
     painter.initFrom(this);
 
+    painter.setFont(QFont("times", 12));
+
     //Desenhar links
     for(auto link: links)
     {
@@ -618,17 +620,6 @@ void MainWindow::refreshPixmap()
                 painter.setPen(pen);
             }
             painter.drawConvexPolygon(getDemandPoints(windowToViewPort1(el.point)).data(), 4);
-
-            //Escrever o label
-            for(auto entry : el.label)
-            {
-                /*painter.drawText((int) windowToViewPort1(entry.linPoint).x(),
-                                 (int) windowToViewPort1(entry.linPoint).y(),
-                                 entry.content);*/
-                QPoint point ((int) windowToViewPort1(el.point).x() - entry.linPointDif.x(),
-                        (int) windowToViewPort1(el.point).y() - entry.linPointDif.y());
-                painter.drawText(point.x(), point.y(), entry.content);
-            }
         }
         else if (el.type == ElementType::RESERVOIR)
         {
@@ -662,6 +653,14 @@ void MainWindow::refreshPixmap()
             }
 
             painter.drawEllipse (windowToViewPort1({el.point}), 2*radius, 2*radius);
+        }
+
+        //Escrever o label
+        for(auto entry : el.label)
+        {
+            QPoint point ((int) windowToViewPort1(el.point).x() - entry.linPointDif.x(),
+                    (int) windowToViewPort1(el.point).y() - entry.linPointDif.y());
+            painter.drawText(point.x(), point.y(), entry.content);
         }
     }
 

@@ -308,21 +308,21 @@ std::vector<ElementsData> elements =
         {0, 40},
         ElementType::RESERVOIR,
         false,
-        {{{-5, 15}, "Demanda 2"}}
+        {{{-5, 15}, "Reservoir 2"}}
     },
     {
         3,
         {0, 60},
         ElementType::RESERVOIR,
         false,
-        {{{-5, 15}, "Demanda 3"}}
+        {{{-5, 15}, "Reservoir 3"}}
     },
     {
         4,
         {-80, 40},
         ElementType::JUNCTION,
         false,
-        {{{-5, 15}, "Demanda 4"}}
+        {{{-5, 15}, "Junction 4"}}
     }
 };
 
