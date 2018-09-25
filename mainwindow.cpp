@@ -509,6 +509,17 @@ void MainWindow::refreshPixmap()
                          windowToViewPort1(destinyElement.point));
 
         //Desenhar a seta
+        if (link.type == LinkType::NATURAL)
+        {
+            painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+            painter.setPen(Qt::blue);
+        }
+        else
+        {
+            painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+            painter.setPen(Qt::black);
+        }
+
         QLineF line(windowToViewPort1(originElement.point), windowToViewPort1(destinyElement.point));
         painter.drawConvexPolygon(getArrowPoints(line).data(), 3);
     }
@@ -581,6 +592,9 @@ void MainWindow::refreshPixmap()
         painter.drawPolygon(getRectPoints(origin, final).data(), 4);
         selectedRect.clear();
     }
+
+    //teste de escrita de texto
+    painter.drawText(10,10, "Teste de string");
 
     update();
 }
