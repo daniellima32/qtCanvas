@@ -67,6 +67,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
             if (links[index].isSelected)
             {
                 links.erase(links.begin()+index);
+                index--;
             }
         }
 
@@ -134,7 +135,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
             {
                 //labelVec.push_back({{windowPos.x(), windowPos.y()+diffHeight}, part});
                 //labelVec.push_back({{windowPos.x(), windowPos.y()+diffHeight}, list[index]}); //it was working
-                labelVec.push_back({{0.0, diffHeight}, list[index]});
+                labelVec.push_back({{-5.0, diffHeight}, list[index]});
                 diffHeight+=15.0;
             }
 
@@ -624,8 +625,8 @@ void MainWindow::refreshPixmap()
                 /*painter.drawText((int) windowToViewPort1(entry.linPoint).x(),
                                  (int) windowToViewPort1(entry.linPoint).y(),
                                  entry.content);*/
-                QPoint point ((int) windowToViewPort1(el.point).x() - entry.linPoint.x(),
-                        (int) windowToViewPort1(el.point).y() - entry.linPoint.y());
+                QPoint point ((int) windowToViewPort1(el.point).x() - entry.linPointDif.x(),
+                        (int) windowToViewPort1(el.point).y() - entry.linPointDif.y());
                 painter.drawText(point.x(), point.y(), entry.content);
             }
         }

@@ -17,7 +17,7 @@ enum LinkType
 
 struct LabelLine
 {
-    QPointF linPoint; //Em coordenada de mundo
+    QPointF linPointDif; //Em coordenada de tela
     QString content;
 };
 
@@ -262,7 +262,7 @@ std::vector<LinkData> links =
         1,
         false,
         LinkType::NATURAL,
-        {{{-80, 40}, "Link 0"}}
+        {{{-5, 15}, "Link 0"}}
     },
     {
         6,
@@ -270,7 +270,7 @@ std::vector<LinkData> links =
         3,
         false,
         LinkType::ARTIFICIAL,
-        {{{-80, 40}, "Link 1"}}
+        {{{-5, 15}, "Link 1"}}
     }
 };
 
@@ -294,35 +294,35 @@ std::vector<ElementsData> elements =
         {-130, 40},
         ElementType::DEMAND,
         false,
-        {{{-125, 42}, "Demanda 0"}}
+        {{{-5, 15}, "Demanda 0"}}
     },
     {
         1,
         {-130, 60},
         ElementType::DEMAND,
         false,
-        {{{-125, 62}, "Demanda 1"}}
+        {{{-5, 15}, "Demanda 1"}}
     },
     {
         2,
         {0, 40},
         ElementType::RESERVOIR,
         false,
-        {{{-5, 42}, "Demanda 2"}}
+        {{{-5, 15}, "Demanda 2"}}
     },
     {
         3,
         {0, 60},
         ElementType::RESERVOIR,
         false,
-        {{{-5, 62}, "Demanda 3"}}
+        {{{-5, 15}, "Demanda 3"}}
     },
     {
         4,
         {-80, 40},
         ElementType::JUNCTION,
         false,
-        {{{-75, 42}, "Demanda 4"}}
+        {{{-5, 15}, "Demanda 4"}}
     }
 };
 
