@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <iostream>
 #include <QMessageBox>
+#include <QInputDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -87,8 +88,80 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        //Deve criar um elemento temporário
-        uint nextId = getNextAvailableIDOFNode();
+        //Pedir texto de título dos elementos
+        //QInputDialog::getText(nullptr, "Title", "Hello World !!\nWhat goes in here");
+        //QInputDialog
+
+        /*QInputDialog inputDialog;
+        inputDialog.setOptions(QInputDialog::UsePlainTextEditForTextInput);
+        inputDialog.getText(nullptr, "Title", "Hello World !!\nWhat goes in here");*/
+
+        //QInputDialog::getText(nullptr, "Title", "Hello World !!\nWhat goes in here", QInputDialog::UsePlainTextEditForTextInput);
+
+
+        //QWidget *parent;
+        const QString title = "title";
+        const QString label = "label";
+        const QString text = "text";
+        //bool *ok;
+        //Qt::WindowFlags flags;
+        //Qt::InputMethodHints inputMethodHints;
+
+
+        QInputDialog dialog(this);
+        dialog.setOptions(QInputDialog::UsePlainTextEditForTextInput);
+        dialog.setWindowTitle(title);
+        dialog.setLabelText(label);
+        dialog.setTextValue(text);
+        //dialog.setInputMethodHints(inputMethodHints);
+        QString newName;
+
+        int ret = dialog.exec();
+
+        if (ret == 1)  //Usuário inseriu texto
+        {
+            newName = dialog.textValue();
+            Label labelVec;
+
+            uint nextId = getNextAvailableIDOFNode();
+            QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
+
+            //Criar a cadeia de titulo
+            QStringList list = newName.split("\n");
+            float diffHeight = 4.0;
+            //for (auto part: list)
+            for (int index = list.size()-1; index >= 0; index--)
+            {
+                //labelVec.push_back({{windowPos.x(), windowPos.y()+diffHeight}, part});
+                labelVec.push_back({{windowPos.x(), windowPos.y()+diffHeight}, list[index]});
+                diffHeight+=4.0;
+            }
+
+            elements.push_back(
+                            {
+                                nextId,
+                                windowPos,
+                                ElementType::DEMAND,
+                                false,
+                                labelVec
+                            }
+                              );
+
+            this->refreshPixmap();
+        }
+
+        /*if (ok)
+            *ok = !!ret;
+        if (ret) {
+            //return dialog.textValue();
+        } else {
+            //return QString();
+        }*/
+
+
+
+        //Deve criar um elemento
+        /*uint nextId = getNextAvailableIDOFNode();
         QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
         elements.push_back(
                         {
@@ -97,7 +170,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
                             ElementType::DEMAND,
                             false
                         }
-                          );
+                          );*/
     }
 }
 
