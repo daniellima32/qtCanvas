@@ -661,6 +661,15 @@ void MainWindow::refreshPixmap()
             QPoint point ((int) windowToViewPort1(el.point).x() - entry.linPointDif.x(),
                     (int) windowToViewPort1(el.point).y() - entry.linPointDif.y());
             painter.drawText(point.x(), point.y(), entry.content);
+
+            //Se o elemento está selecionado, deve desenhar as opções para alterar posição do título
+            if (el.isSelected)
+            {
+                painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+                painter.setPen(Qt::black);
+
+                painter.drawRect(point.x()-5, point.y(), 3, 3);
+            }
         }
     }
 
