@@ -128,13 +128,14 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 
             //Criar a cadeia de titulo
             QStringList list = newName.split("\n");
-            float diffHeight = 4.0;
+            float diffHeight = 15.0;
             //for (auto part: list)
             for (int index = list.size()-1; index >= 0; index--)
             {
                 //labelVec.push_back({{windowPos.x(), windowPos.y()+diffHeight}, part});
-                labelVec.push_back({{windowPos.x(), windowPos.y()+diffHeight}, list[index]});
-                diffHeight+=4.0;
+                //labelVec.push_back({{windowPos.x(), windowPos.y()+diffHeight}, list[index]}); //it was working
+                labelVec.push_back({{0.0, diffHeight}, list[index]});
+                diffHeight+=15.0;
             }
 
             elements.push_back(
@@ -620,9 +621,12 @@ void MainWindow::refreshPixmap()
             //Escrever o label
             for(auto entry : el.label)
             {
-                painter.drawText((int) windowToViewPort1(entry.linPoint).x(),
+                /*painter.drawText((int) windowToViewPort1(entry.linPoint).x(),
                                  (int) windowToViewPort1(entry.linPoint).y(),
-                                 entry.content);
+                                 entry.content);*/
+                QPoint point ((int) windowToViewPort1(el.point).x() - entry.linPoint.x(),
+                        (int) windowToViewPort1(el.point).y() - entry.linPoint.y());
+                painter.drawText(point.x(), point.y(), entry.content);
             }
         }
         else if (el.type == ElementType::RESERVOIR)
