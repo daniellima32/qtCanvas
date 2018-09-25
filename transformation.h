@@ -15,12 +15,21 @@ enum LinkType
     NATURAL, ARTIFICIAL
 };
 
+struct LabelLine
+{
+    QPointF linPoint; //Em coordenada de mundo
+    QString content;
+};
+
+using Label = std::vector<LabelLine>;
+
 struct ElementsData
 {
     uint id;                //ID que descreve esse elemento
     QPointF point;          //Posição GPS do nó
     ElementType type;       //Tipo do elemento
     bool isSelected;        //Indicação se está selecionado ou não
+    Label label;
 };
 
 struct LinkData
@@ -30,6 +39,7 @@ struct LinkData
     uint destiny;           //id do nó destino
     bool isSelected;        //Indicação se está selecionado ou não
     LinkType type;
+    Label label;
 };
 
 #define MPOINT2POINT(mpt, pt)   ((pt).x = (mpt).x, (pt).y = (mpt).y)
@@ -251,14 +261,16 @@ std::vector<LinkData> links =
         0,
         1,
         false,
-        LinkType::NATURAL
+        LinkType::NATURAL,
+        {{{-80, 40}, "Link 0"}}
     },
     {
         6,
         2,
         3,
         false,
-        LinkType::ARTIFICIAL
+        LinkType::ARTIFICIAL,
+        {{{-80, 40}, "Link 1"}}
     }
 };
 
@@ -281,31 +293,36 @@ std::vector<ElementsData> elements =
         0,
         {-130, 40},
         ElementType::DEMAND,
-        false
+        false,
+        {{{-125, 42}, "Demanda 0"}}
     },
     {
         1,
         {-130, 60},
         ElementType::DEMAND,
         false,
+        {{{-125, 62}, "Demanda 1"}}
     },
     {
         2,
         {0, 40},
         ElementType::RESERVOIR,
-        false
+        false,
+        {{{-5, 42}, "Demanda 2"}}
     },
     {
         3,
         {0, 60},
         ElementType::RESERVOIR,
-        false
+        false,
+        {{{-5, 62}, "Demanda 3"}}
     },
     {
         4,
         {-80, 40},
         ElementType::JUNCTION,
-        false
+        false,
+        {{{-75, 42}, "Demanda 4"}}
     }
 };
 

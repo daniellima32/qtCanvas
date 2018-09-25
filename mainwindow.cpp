@@ -543,6 +543,14 @@ void MainWindow::refreshPixmap()
                 painter.setPen(pen);
             }
             painter.drawConvexPolygon(getDemandPoints(windowToViewPort1(el.point)).data(), 4);
+
+            //Escrever o label
+            for(auto entry : el.label)
+            {
+                painter.drawText((int) windowToViewPort1(entry.linPoint).x(),
+                                 (int) windowToViewPort1(entry.linPoint).y(),
+                                 entry.content);
+            }
         }
         else if (el.type == ElementType::RESERVOIR)
         {
