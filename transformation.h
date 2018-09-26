@@ -257,7 +257,7 @@ bool isClickedInElement(const QPointF &elementCenter,
 std::vector<LinkData> links =
 {
     {
-        5,
+        0,
         0,
         1,
         false,
@@ -265,7 +265,7 @@ std::vector<LinkData> links =
         {{{-5, 15}, "Link 0"}}
     },
     {
-        6,
+        1,
         2,
         3,
         false,

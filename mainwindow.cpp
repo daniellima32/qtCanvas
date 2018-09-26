@@ -59,10 +59,8 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
         ElementsData origin, destiny;
         //Descobrir se existem elementos origem e destino a ser removidos
         //e o link entre eles não selecionado
-        //for (auto link: links)
         for (size_t index = 0; index < links.size(); index++)
         {
-            //if (!link.isSelected) //Se o link não está selecionado
             if (!links[index].isSelected) //Se o link não está selecionado
             {
                 //Descobrir origem
@@ -382,7 +380,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                                     nextId,
                                     windowPos,
                                     element.type,
-                                    false
+                                    false,
+                                    {{{-5, 15}, "Elemento "+ QString::number(nextId)}}
                                 }
                                   );
 
@@ -393,7 +392,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                     id,
                     nextId,
                     false,
-                    LinkType::NATURAL
+                    LinkType::NATURAL,
+                    {{{-5, 15}, "Link "+ QString::number(nextLinkId)}}
                 }
                             );
 
