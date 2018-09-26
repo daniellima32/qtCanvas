@@ -59,23 +59,22 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
         ElementsData origin, destiny;
         //Descobrir se existem elementos origem e destino a ser removidos
         //e o link entre eles não selecionado
-        for (auto link: links)
+        //for (auto link: links)
+        for (size_t index = 0; index < links.size(); index++)
         {
-            if (!link.isSelected) //Se o link não está selecionado
+            //if (!link.isSelected) //Se o link não está selecionado
+            if (!links[index].isSelected) //Se o link não está selecionado
             {
                 //Descobrir origem
-                aquireElementByID(link.origin, origin);
+                aquireElementByID(links[index].origin, origin);
                 //Descobrir destino
-                aquireElementByID(link.destiny, destiny);
+                aquireElementByID(links[index].destiny, destiny);
 
                 if (origin.isSelected || destiny.isSelected)
                 {
-                    //Informar ao usuário que não pode fazer essa exclusão
-                    QMessageBox msgBox;
-                    msgBox.setWindowTitle("Atenção");
-                    msgBox.setText("Não é permitido remover as extremidades de um link sem remover o link.");
-                    msgBox.exec();
-                    return;
+                    //Removendo links (não selecionados) que estão entre os elementos selecionados
+                    links.erase(links.begin()+index);
+                    index--;
                 }
             }
         }
@@ -726,9 +725,6 @@ void MainWindow::refreshPixmap()
         painter.drawPolygon(getRectPoints(origin, final).data(), 4);
         selectedRect.clear();
     }
-
-    //teste de escrita de texto
-    painter.drawText(10,10, "Teste de string");
 
     update();
 }
