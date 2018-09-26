@@ -320,8 +320,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             labelBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
             //evitando fazer a parte direita da comparação do if
 
-            QPointF translateFactor (-(windowToViewPort1(windowPos).x() - windowToViewPort1(lastMouseWindowPosition).x()),
-                                     -(windowToViewPort1(windowPos).y() - windowToViewPort1(lastMouseWindowPosition).y()));
+            QPointF translateFactor (-(viewPortPos.x() - windowToViewPort1(lastMouseWindowPosition).x()),
+                                                 -(viewPortPos.y() - windowToViewPort1(lastMouseWindowPosition).y()));
 
             QPointF pDiff = labelDiffBackup;
             translatePoint(translateFactor, pDiff);
