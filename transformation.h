@@ -288,6 +288,8 @@ bool alreadyExistsLinksWithOriginAndDestiny(uint origin, uint destiny)
     return false;
 }
 
+std::map<uint, ElementsData*> mapIDToElement;
+
 std::vector<ElementsData> elements =
 {
     {
@@ -405,7 +407,7 @@ bool aquireClickedElement(const QPointF &mousePos,
 
 bool aquireElementByID(const uint id, ElementsData& el)
 {
-    for (auto element : elements)
+    for (auto &element : elements)
     {
         if (element.id == id)
         {

@@ -12,6 +12,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    for (auto &el: elements)
+    {
+        mapIDToElement[el.id] = &el;
+    }
+
     this->refreshPixmap();
 }
 
@@ -337,6 +343,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         else if(labelBeeingChanged || someLabelWasClicked(windowToViewPort1(lastMouseWindowPosition)))
         //else if(labelBeeingChanged || someLabelWasClicked(lastMouseWindowPosition))
         {
+            std::cout << "Evento detectado";
+            std::cout.flush();
             QPointF viewPortPos ((float)event->x(), (float)event->y());
             if (!labelBeeingChanged)
             {
@@ -356,10 +364,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             //Atualizar posição da label
             ElementsData el;
             //em x soma a diferença mais 5
-            aquireElementByID(idOfElementOwnerOfLabel, el);
+            //aquireElementByID(idOfElementOwnerOfLabel, el);
 
-            QPointF translateFactor (windowToViewPort1(windowPos).x() - windowToViewPort1(lastMouseWindowPosition).x(),
-                                     windowToViewPort1(windowPos).y() - windowToViewPort1(lastMouseWindowPosition).y());
+            QPointF translateFactor (-(windowToViewPort1(windowPos).x() - windowToViewPort1(lastMouseWindowPosition).x()),
+                                     -(windowToViewPort1(windowPos).y() - windowToViewPort1(lastMouseWindowPosition).y()));
 
             //TODO TODO
             QPointF pDiff = labelDiffBackup;
@@ -367,9 +375,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
             //translatePoint(translateFactor, el.label[idLabel].linPointDif);
             //translatePoint({20,20}, el.label[idLabel].linPointDif);
-            translatePoint({20,20}, pDiff);
+            //translatePoint({20,20}, pDiff); //it is working
+            translatePoint(translateFactor, pDiff);
 
-            el.label[idLabel].linPointDif = pDiff;
+            //el.label[idLabel].linPointDif = pDiff;
+            mapIDToElement[idOfElementOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
             int a = 10;
         }
         else
