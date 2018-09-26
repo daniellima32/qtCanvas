@@ -333,6 +333,45 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                 }
             }
         } // fim de mover elementos
+        //Inicio de detectar alteração de posição de label de elemento
+        else if(labelBeeingChanged || someLabelWasClicked(windowToViewPort1(lastMouseWindowPosition)))
+        //else if(labelBeeingChanged || someLabelWasClicked(lastMouseWindowPosition))
+        {
+            QPointF viewPortPos ((float)event->x(), (float)event->y());
+            if (!labelBeeingChanged)
+            {
+                /*uint idOfElementOwnerOfLabel;
+                uint idLabel;
+                QPointF labelDiffBackup;*/
+                //getLabelThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup);
+
+
+                getLabelThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
+                //getLabelThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, viewPortPos); //old
+            }
+
+            labelBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
+            //evitando fazer a parte direita da comparação do if
+
+            //Atualizar posição da label
+            ElementsData el;
+            //em x soma a diferença mais 5
+            aquireElementByID(idOfElementOwnerOfLabel, el);
+
+            QPointF translateFactor (windowToViewPort1(windowPos).x() - windowToViewPort1(lastMouseWindowPosition).x(),
+                                     windowToViewPort1(windowPos).y() - windowToViewPort1(lastMouseWindowPosition).y());
+
+            //TODO TODO
+            QPointF pDiff = labelDiffBackup;
+            //el.label[idLabel].linPointDif = labelDiffBackup;  //proximo do correto
+
+            //translatePoint(translateFactor, el.label[idLabel].linPointDif);
+            //translatePoint({20,20}, el.label[idLabel].linPointDif);
+            translatePoint({20,20}, pDiff);
+
+            el.label[idLabel].linPointDif = pDiff;
+            int a = 10;
+        }
         else
         {
             //Fazer pan de window

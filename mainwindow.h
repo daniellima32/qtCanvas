@@ -34,6 +34,11 @@ private:
     QPixmap pixmap;
     QPointF lastMouseWindowPosition = {0.0, 0.0};
     std::vector<QPointF> selectedRect;
+
+    bool labelBeeingChanged = false;
+    uint idOfElementOwnerOfLabel;
+    uint idLabel;
+    QPointF labelDiffBackup;
 };
 
 #endif // MAINWINDOW_H

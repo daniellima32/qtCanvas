@@ -256,7 +256,7 @@ bool isClickedInElement(const QPointF &elementCenter,
 
 std::vector<LinkData> links =
 {
-    {
+/*    {
         5,
         0,
         1,
@@ -272,6 +272,7 @@ std::vector<LinkData> links =
         LinkType::ARTIFICIAL,
         {{{-5, 15}, "Link 1"}}
     }
+        */
 };
 
 bool alreadyExistsLinksWithOriginAndDestiny(uint origin, uint destiny)
@@ -295,7 +296,7 @@ std::vector<ElementsData> elements =
         ElementType::DEMAND,
         false,
         {{{-5, 15}, "Demanda 0"}}
-    },
+    }/*,
     {
         1,
         {-130, 60},
@@ -323,7 +324,7 @@ std::vector<ElementsData> elements =
         ElementType::JUNCTION,
         false,
         {{{-5, 15}, "Junction 4"}}
-    }
+    }*/
 };
 
 float radius = 5.0;
@@ -520,6 +521,92 @@ using namespace transformation;
 
 double r = 10;
 
+QPointF windowToViewPort1(QPointF windowPoint)
+{
+    QPointF view;
+    view.setX(((viewPort.width * (windowPoint.x() - window.point.x())) +  (viewPort.point.x() * window.width)) / window.width);
+    view.setY(((viewPort.height * (window.point.y() - windowPoint.y()))  + (viewPort.point.y() * window.height)) / window.height);
+    return view;
+}
+
+QPointF viewPortToWindow1(QPointF viewPoint)
+{
+    QPointF windowPoint;
+    windowPoint.setX((((viewPoint.x() - viewPort.point.x()) * window.width) + viewPort.width * window.point.x()) / viewPort.width);
+    windowPoint.setY(((viewPort.height * window.point.y()) - ((viewPoint.y() - viewPort.point.y()) * window.height)) / viewPort.height);
+    return windowPoint;
+}
+
+QPoint viewPortToWindow2(QPointF viewPoint)
+{
+    QPoint windowPoint;
+    windowPoint.setX((((viewPoint.x() - viewPort.point.x()) * window.width) + viewPort.width * window.point.x()) / viewPort.width);
+    windowPoint.setY(((viewPort.height * window.point.y()) - ((viewPoint.y() - viewPort.point.y()) * window.height)) / viewPort.height);
+    return windowPoint;
+}
+
+bool someLabelWasClicked(const QPointF &mouseViwPortPos)
+{
+    Label l;
+    QPointF point;
+    for (auto el: elements)
+    {
+        //Para pular elementos desnecessários
+        if (!el.isSelected) continue;
+
+        l = el.label;
+        //for (auto line: l)   //l é um vector of LabelLine
+        for (int index = 0; index < l.size(); ++index)
+        {
+            //i-ésima entrada de Labelline
+
+            //deve alterar point para somar a posição de el
+            point = QPoint((int) windowToViewPort1(el.point).x() - l[index].linPointDif.x() -5,
+                    (int) windowToViewPort1(el.point).y() - l[index].linPointDif.y());
+
+            if (isClickedInElement(point, mouseViwPortPos, 5.0))
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+
+bool getLabelThatWasClicked(uint &idOfElementOwnerOfLabel, uint &idLabel, QPointF &labelDiffBackup, const QPointF &mouseViwPortPos)
+{
+    Label l;
+    QPointF point;
+    for (auto el: elements)
+    {
+        //Para pular elementos desnecessários
+        if (!el.isSelected) continue;
+
+        l = el.label;
+        //for (auto line: l)   //l é um vector of LabelLine
+        for (int index = 0; index < l.size(); ++index)
+        {
+            //i-ésima entrada de Labelline
+
+            //deve alterar point para somar a posição de el
+            point = QPoint((int) windowToViewPort1(el.point).x() - l[index].linPointDif.x() -5,
+                    (int) windowToViewPort1(el.point).y() - l[index].linPointDif.y());
+
+            if (isClickedInElement(point, mouseViwPortPos, 5.0))
+            {
+                idOfElementOwnerOfLabel = el.id;
+                idLabel = index;
+                labelDiffBackup = l[index].linPointDif;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 std::vector<QPointF> getReservoirPoints(QPointF point)
 {
     std::vector<QPointF>points =
@@ -628,30 +715,6 @@ std::vector<QPointF> getArrowPoints(QLineF line)
 
     //dc.DrawPolygon(3, p);
     //m_arrowRect = wxRect(xMin, yMin, xMax - xMin, yMax - yMin);
-}
-
-QPointF windowToViewPort1(QPointF windowPoint)
-{
-    QPointF view;
-    view.setX(((viewPort.width * (windowPoint.x() - window.point.x())) +  (viewPort.point.x() * window.width)) / window.width);
-    view.setY(((viewPort.height * (window.point.y() - windowPoint.y()))  + (viewPort.point.y() * window.height)) / window.height);
-    return view;
-}
-
-QPointF viewPortToWindow1(QPointF viewPoint)
-{
-    QPointF windowPoint;
-    windowPoint.setX((((viewPoint.x() - viewPort.point.x()) * window.width) + viewPort.width * window.point.x()) / viewPort.width);
-    windowPoint.setY(((viewPort.height * window.point.y()) - ((viewPoint.y() - viewPort.point.y()) * window.height)) / viewPort.height);
-    return windowPoint;
-}
-
-QPoint viewPortToWindow2(QPointF viewPoint)
-{
-    QPoint windowPoint;
-    windowPoint.setX((((viewPoint.x() - viewPort.point.x()) * window.width) + viewPort.width * window.point.x()) / viewPort.width);
-    windowPoint.setY(((viewPort.height * window.point.y()) - ((viewPoint.y() - viewPort.point.y()) * window.height)) / viewPort.height);
-    return windowPoint;
 }
 
 void scaleRect(QPointF scaleFactor, Rect& rect)
