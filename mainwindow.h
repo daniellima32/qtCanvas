@@ -35,8 +35,10 @@ private:
     QPointF lastMouseWindowPosition = {0.0, 0.0};
     std::vector<QPointF> selectedRect;
 
-    bool labelBeeingChanged = false;
+    bool labelOfElementBeeingChanged = false;
+    bool labelOfLinkBeeingChanged = false;
     uint idOfElementOwnerOfLabel;
+    uint idOfLinkOwnerOfLabel;
     uint idLabel;
     QPointF labelDiffBackup;
 };

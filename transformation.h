@@ -256,7 +256,7 @@ bool isClickedInElement(const QPointF &elementCenter,
 
 std::vector<LinkData> links =
 {
-/*    {
+    {
         5,
         0,
         1,
@@ -272,7 +272,6 @@ std::vector<LinkData> links =
         LinkType::ARTIFICIAL,
         {{{-5, 15}, "Link 1"}}
     }
-        */
 };
 
 bool alreadyExistsLinksWithOriginAndDestiny(uint origin, uint destiny)
@@ -289,6 +288,7 @@ bool alreadyExistsLinksWithOriginAndDestiny(uint origin, uint destiny)
 }
 
 std::map<uint, ElementsData*> mapIDToElement;
+std::map<uint, LinkData*> mapIDToLink;
 
 std::vector<ElementsData> elements =
 {
@@ -298,7 +298,7 @@ std::vector<ElementsData> elements =
         ElementType::DEMAND,
         false,
         {{{-5, 15}, "Demanda 0"}}
-    }/*,
+    },
     {
         1,
         {-130, 60},
@@ -326,7 +326,7 @@ std::vector<ElementsData> elements =
         ElementType::JUNCTION,
         false,
         {{{-5, 15}, "Junction 4"}}
-    }*/
+    }
 };
 
 float radius = 5.0;
@@ -547,7 +547,7 @@ QPoint viewPortToWindow2(QPointF viewPoint)
     return windowPoint;
 }
 
-bool someLabelWasClicked(const QPointF &mouseViwPortPos)
+bool someLabelOfElementWasClicked(const QPointF &mouseViwPortPos)
 {
     Label l;
     QPointF point;
@@ -577,7 +577,45 @@ bool someLabelWasClicked(const QPointF &mouseViwPortPos)
 }
 
 
-bool getLabelThatWasClicked(uint &idOfElementOwnerOfLabel, uint &idLabel, QPointF &labelDiffBackup, const QPointF &mouseViwPortPos)
+bool someLabelOfLinkWasClicked(const QPointF &mouseViwPortPos)
+{
+    Label l;
+    QPointF point;
+
+    ElementsData origEl, destEl;
+
+    for (auto link: links)
+    {
+        //Para pular elementos desnecessários
+        if (!link.isSelected) continue;
+
+        //Obtem origem
+        aquireElementByID(link.origin, origEl);
+        //Obtem destino
+        aquireElementByID(link.destiny, destEl);
+        QPointF halfPoint ((origEl.point.x() + destEl.point.x())/2,
+                           (origEl.point.y() + destEl.point.y())/2);
+
+        l = link.label;
+        for (int index = 0; index < l.size(); ++index)
+        {
+            //i-ésima entrada de Labelline
+
+            //deve alterar point para somar a posição de el
+            point = QPoint((int) windowToViewPort1(halfPoint).x() - l[index].linPointDif.x() -5,
+                    (int) windowToViewPort1(halfPoint).y() - l[index].linPointDif.y());
+
+            if (isClickedInElement(point, mouseViwPortPos, 5.0))
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool getLabelOfElementThatWasClicked(uint &idOfElementOwnerOfLabel, uint &idLabel, QPointF &labelDiffBackup, const QPointF &mouseViwPortPos)
 {
     Label l;
     QPointF point;
@@ -599,6 +637,48 @@ bool getLabelThatWasClicked(uint &idOfElementOwnerOfLabel, uint &idLabel, QPoint
             if (isClickedInElement(point, mouseViwPortPos, 5.0))
             {
                 idOfElementOwnerOfLabel = el.id;
+                idLabel = index;
+                labelDiffBackup = l[index].linPointDif;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool getLabelOfLinkThatWasClicked(uint &idOfLinkOwnerOfLabel, uint &idLabel, QPointF &labelDiffBackup, const QPointF &mouseViwPortPos)
+{
+    Label l;
+    QPointF point;
+
+    ElementsData origEl, destEl;
+
+    for (auto link: links)
+    {
+        //Para pular elementos desnecessários
+        if (!link.isSelected) continue;
+
+        //Obtem origem
+        aquireElementByID(link.origin, origEl);
+        //Obtem destino
+        aquireElementByID(link.destiny, destEl);
+        QPointF halfPoint ((origEl.point.x() + destEl.point.x())/2,
+                           (origEl.point.y() + destEl.point.y())/2);
+
+        l = link.label;
+        //for (auto line: l)   //l é um vector of LabelLine
+        for (int index = 0; index < l.size(); ++index)
+        {
+            //i-ésima entrada de Labelline
+
+            //deve alterar point para somar a posição de el
+            point = QPoint((int) windowToViewPort1(halfPoint).x() - l[index].linPointDif.x() -5,
+                    (int) windowToViewPort1(halfPoint).y() - l[index].linPointDif.y());
+
+            if (isClickedInElement(point, mouseViwPortPos, 5.0))
+            {
+                idOfLinkOwnerOfLabel = link.id;
                 idLabel = index;
                 labelDiffBackup = l[index].linPointDif;
                 return true;

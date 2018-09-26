@@ -9,9 +9,16 @@
 
 void updateMap()
 {
+    mapIDToElement.clear();
     for (auto &el: elements)
     {
         mapIDToElement[el.id] = &el;
+    }
+
+    mapIDToLink.clear();
+    for (auto &link: links)
+    {
+        mapIDToLink[link.id] = &link;
     }
 }
 
@@ -200,7 +207,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     }
     drawingSelection = false;
     elementsBeeingMoved = false;
-    labelBeeingChanged = false;
+    labelOfElementBeeingChanged = false;
+    labelOfLinkBeeingChanged = false;
 
     //Checa se um elemento temporário foi inserido
     if (temporaryElementInserted)
@@ -308,16 +316,16 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                 }
             }
         } // fim de mover elementos
-        //Inicio de detectar alteração de posição de label de elemento
-        else if(labelBeeingChanged || someLabelWasClicked(windowToViewPort1(lastMouseWindowPosition)))
+        //Inicio de detectar alteração de posição de label de elemento node
+        else if(labelOfElementBeeingChanged || someLabelOfElementWasClicked(windowToViewPort1(lastMouseWindowPosition)))
         {
             QPointF viewPortPos ((float)event->x(), (float)event->y());
-            if (!labelBeeingChanged)
+            if (!labelOfElementBeeingChanged)
             {
-                getLabelThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
+                getLabelOfElementThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
             }
 
-            labelBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
+            labelOfElementBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
             //evitando fazer a parte direita da comparação do if
 
             QPointF translateFactor (-(viewPortPos.x() - windowToViewPort1(lastMouseWindowPosition).x()),
@@ -326,6 +334,27 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             QPointF pDiff = labelDiffBackup;
             translatePoint(translateFactor, pDiff);
             mapIDToElement[idOfElementOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+        }
+        //Detectar clique em label de link
+        else if(labelOfLinkBeeingChanged || someLabelOfLinkWasClicked(windowToViewPort1(lastMouseWindowPosition)))
+        {
+            QPointF viewPortPos ((float)event->x(), (float)event->y());
+            if (!labelOfLinkBeeingChanged)
+            {
+                //getLabelOfElementThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
+                getLabelOfLinkThatWasClicked(idOfLinkOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
+            }
+
+            labelOfLinkBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
+            //evitando fazer a parte direita da comparação do if
+
+            QPointF translateFactor (-(viewPortPos.x() - windowToViewPort1(lastMouseWindowPosition).x()),
+                                                 -(viewPortPos.y() - windowToViewPort1(lastMouseWindowPosition).y()));
+
+            QPointF pDiff = labelDiffBackup;
+            translatePoint(translateFactor, pDiff);
+            //mapIDToElement[idOfElementOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+            mapIDToLink[idOfLinkOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
         }
         else
         {
@@ -589,6 +618,27 @@ void MainWindow::refreshPixmap()
 
         QLineF line(windowToViewPort1(originElement.point), windowToViewPort1(destinyElement.point));
         painter.drawConvexPolygon(getArrowPoints(line).data(), 3);
+
+        //Desenhar label de link
+        //Escrever o label
+        QPointF halfPoint ((originElement.point.x() + destinyElement.point.x())/2,
+                           (originElement.point.y() + destinyElement.point.y())/2);
+        for(auto entry : link.label)
+        {
+            QPoint point ((int) windowToViewPort1(halfPoint).x() - entry.linPointDif.x(),
+                    (int) windowToViewPort1(halfPoint).y() - entry.linPointDif.y());
+            painter.drawText(point.x(), point.y(), entry.content);
+
+            //Se o elemento está selecionado, deve desenhar as opções para alterar posição do título
+            if (link.isSelected)
+            {
+                painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+                painter.setPen(Qt::black);
+
+                painter.drawRect(point.x()-5, point.y(), 3, 3);
+            }
+        }
+
     }
 
     //Desenhar elementos
