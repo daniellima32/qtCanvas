@@ -7,16 +7,21 @@
 #include <QMessageBox>
 #include <QInputDialog>
 
+void updateMap()
+{
+    for (auto &el: elements)
+    {
+        mapIDToElement[el.id] = &el;
+    }
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    for (auto &el: elements)
-    {
-        mapIDToElement[el.id] = &el;
-    }
+    updateMap();
 
     this->refreshPixmap();
 }
@@ -155,30 +160,10 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
                             }
                               );
 
+            updateMap(); //Atualiza o mapa de elementos
+
             this->refreshPixmap();
         }
-
-        /*if (ok)
-            *ok = !!ret;
-        if (ret) {
-            //return dialog.textValue();
-        } else {
-            //return QString();
-        }*/
-
-
-
-        //Deve criar um elemento
-        /*uint nextId = getNextAvailableIDOFNode();
-        QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
-        elements.push_back(
-                        {
-                            nextId,
-                            windowPos,
-                            ElementType::DEMAND,
-                            false
-                        }
-                          );*/
     }
 }
 
@@ -234,6 +219,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     }
     drawingSelection = false;
     elementsBeeingMoved = false;
+    labelBeeingChanged = false;
 
     //Checa se um elemento temporário foi inserido
     if (temporaryElementInserted)
@@ -288,6 +274,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         }
 
         temporaryElementInserted=false;
+
+        updateMap(); //Atualiza o mapa de elementos
     }
 
     if (mapOfOrigPosOfMovedElements.size() > 0) mapOfOrigPosOfMovedElements.clear();
