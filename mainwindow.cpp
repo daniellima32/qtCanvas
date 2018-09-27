@@ -228,32 +228,36 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         if (someElementWasClicked(windowPos))
         {
             uint id, nextId;
-            aquireIDOfClickedElement(lastMouseWindowPosition, id);
-            aquireIDOfClickedElement(windowPos, nextId);
+            bool ret1 = true, ret2 = true;
+            ret1 = aquireIDOfClickedElement(lastMouseWindowPosition, id);
+            ret2 = aquireIDOfClickedElement(windowPos, nextId);
 
-            //Checar se ja existe link entre esses elementos
-            if (alreadyExistsLinksWithOriginAndDestiny(id, nextId))
+            if (ret1 && ret2)
             {
-                //Informar ao usuário que não pode inserir elemento
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("Atenção");
-                msgBox.setText("Já existe um link entre esses nós.");
-                msgBox.exec();
-            }
-            else
-            {
-                //Fazer link com o novo elemento
-                uint nextLinkId = getNextAvailableIDOFLink();
-
-                links.push_back(
+                //Checar se ja existe link entre esses elementos
+                if (alreadyExistsLinksWithOriginAndDestiny(id, nextId))
                 {
-                    nextLinkId,
-                    id,           //id da origem
-                    nextId,       //id do destino
-                    false,
-                    LinkType::NATURAL,
-                    {{{-5, 15}, "Link "+ QString::number(nextLinkId)}}
-                });
+                    //Informar ao usuário que não pode inserir elemento
+                    QMessageBox msgBox;
+                    msgBox.setWindowTitle("Atenção");
+                    msgBox.setText("Já existe um link entre esses nós.");
+                    msgBox.exec();
+                }
+                else
+                {
+                    //Fazer link com o novo elemento
+                    uint nextLinkId = getNextAvailableIDOFLink();
+
+                    links.push_back(
+                    {
+                        nextLinkId,
+                        id,           //id da origem
+                        nextId,       //id do destino
+                        false,
+                        LinkType::NATURAL,
+                        {{{-5, 15}, "Link "+ QString::number(nextLinkId)}}
+                    });
+                }
             }
         }
         else
@@ -283,6 +287,7 @@ void MainWindow::resizeEvent(QResizeEvent* )
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF windowPos = viewPortToWindow1({(float)event->x(), (float)event->y()});
+    bool ret = true;
     if (event->buttons() == Qt::RightButton)
     {
         //Deve descobrir se deve mover elementos ou fazer pan de window
@@ -325,18 +330,21 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             QPointF viewPortPos ((float)event->x(), (float)event->y());
             if (!labelOfElementBeeingChanged)
             {
-                getLabelOfElementThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
+                ret = getLabelOfElementThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
             }
 
-            labelOfElementBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
-            //evitando fazer a parte direita da comparação do if
+            if (ret)
+            {
+                labelOfElementBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
+                //evitando fazer a parte direita da comparação do if
 
-            QPointF translateFactor (-(viewPortPos.x() - windowToViewPort1(lastMouseWindowPosition).x()),
-                                                 -(viewPortPos.y() - windowToViewPort1(lastMouseWindowPosition).y()));
+                QPointF translateFactor (-(viewPortPos.x() - windowToViewPort1(lastMouseWindowPosition).x()),
+                                                     -(viewPortPos.y() - windowToViewPort1(lastMouseWindowPosition).y()));
 
-            QPointF pDiff = labelDiffBackup;
-            translatePoint(translateFactor, pDiff);
-            mapIDToElement[idOfElementOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+                QPointF pDiff = labelDiffBackup;
+                translatePoint(translateFactor, pDiff);
+                mapIDToElement[idOfElementOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+            }
         }
         //Detectar clique em label de link
         else if(labelOfLinkBeeingChanged || someLabelOfLinkWasClicked(windowToViewPort1(lastMouseWindowPosition)))
@@ -345,19 +353,22 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             if (!labelOfLinkBeeingChanged)
             {
                 //getLabelOfElementThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
-                getLabelOfLinkThatWasClicked(idOfLinkOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
+                ret = getLabelOfLinkThatWasClicked(idOfLinkOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
             }
 
-            labelOfLinkBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
-            //evitando fazer a parte direita da comparação do if
+            if (ret)
+            {
+                labelOfLinkBeeingChanged = true; //No próximo evento, labelBeeingChanged já tem o valor true,
+                //evitando fazer a parte direita da comparação do if
 
-            QPointF translateFactor (-(viewPortPos.x() - windowToViewPort1(lastMouseWindowPosition).x()),
-                                                 -(viewPortPos.y() - windowToViewPort1(lastMouseWindowPosition).y()));
+                QPointF translateFactor (-(viewPortPos.x() - windowToViewPort1(lastMouseWindowPosition).x()),
+                                                     -(viewPortPos.y() - windowToViewPort1(lastMouseWindowPosition).y()));
 
-            QPointF pDiff = labelDiffBackup;
-            translatePoint(translateFactor, pDiff);
-            //mapIDToElement[idOfElementOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
-            mapIDToLink[idOfLinkOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+                QPointF pDiff = labelDiffBackup;
+                translatePoint(translateFactor, pDiff);
+                //mapIDToElement[idOfElementOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+                mapIDToLink[idOfLinkOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+            }
         }
         else
         {
@@ -378,30 +389,33 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
                 ElementsData element;
                 uint id;
-                aquireIDOfClickedElement(lastMouseWindowPosition, id);
-                aquireElementByID(id, element);
+                ret = aquireIDOfClickedElement(lastMouseWindowPosition, id);
+                ret =  ret && aquireElementByID(id, element);
 
-                elements.push_back(
-                                {
-                                    nextId,
-                                    windowPos,
-                                    element.type,
-                                    false,
-                                    {{{-5, 15}, "Elemento "+ QString::number(nextId)}}
-                                }
-                                  );
-
-                uint nextLinkId = getNextAvailableIDOFLink();
-                links.push_back(
+                if (ret)
                 {
-                    nextLinkId,
-                    id,
-                    nextId,
-                    false,
-                    LinkType::NATURAL,
-                    {{{-5, 15}, "Link "+ QString::number(nextLinkId)}}
+                    elements.push_back(
+                                    {
+                                        nextId,
+                                        windowPos,
+                                        element.type,
+                                        false,
+                                        {{{-5, 15}, "Elemento "+ QString::number(nextId)}}
+                                    }
+                                      );
+
+                    uint nextLinkId = getNextAvailableIDOFLink();
+                    links.push_back(
+                    {
+                        nextLinkId,
+                        id,
+                        nextId,
+                        false,
+                        LinkType::NATURAL,
+                        {{{-5, 15}, "Link "+ QString::number(nextLinkId)}}
+                    }
+                                );
                 }
-                            );
 
                 temporaryElementInserted = true;
             }
@@ -410,7 +424,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                 //Alterar posição de último elemento
                 //O link é alterado automaticamente
                 ElementsData element;
-                elements[elements.size()-1].point = windowPos;
+                if (elements.size() > 0)
+                    elements[elements.size()-1].point = windowPos;
             }
 
         }
