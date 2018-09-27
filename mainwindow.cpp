@@ -241,22 +241,52 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                 //Fazer link com o novo elemento
                 uint nextLinkId = getNextAvailableIDOFLink();
 
-                links.push_back(
+                LinkData newLink;
+                newLink.id = nextLinkId;
+                newLink.origin = id;
+                newLink.destiny = nextId;
+                newLink.isSelected = false;
+                newLink.type = LinkType::NATURAL;
+                newLink.label = {{{-5, 15}, "Link "+ QString::number(nextLinkId)}};
+                links.push_back(newLink);
+
+                /*links.push_back(
                 {
                     nextLinkId,
                     id,           //id da origem
                     nextId,       //id do destino
                     false,
-                    LinkType::NATURAL
-                }
-                            );
+                    LinkType::NATURAL,
+                    {{{-5, 15}, "Link "+ QString::number(nextLinkId)}}
+                });*/
+
+                //links[links.size()-1].label = {{{-5, 15}, "Link "+ QString::number(nextLinkId)}};
             }
         }
         else
         {
             //Caso contrário, deve manter o elemento criado e setar temporaryElementInserted=false
             elements.push_back(elementCopy);
-            links.push_back(linkCopy);
+
+            //será criado manualmente
+            //links.push_back(linkCopy);
+
+            LinkData newLink;
+            newLink.id = linkCopy.id;
+            newLink.origin = linkCopy.origin;
+            newLink.destiny = linkCopy.destiny;
+            newLink.isSelected = linkCopy.isSelected;
+            newLink.type = linkCopy.type;
+            newLink.label = linkCopy.label;
+            links.push_back(newLink);
+
+
+            /*for (auto l: linkCopy.label)
+            {
+                links[links.size()-1].label.push_back(l);
+            }*/
+
+            //links[links.size()-1].label = linkCopy.label;
         }
 
         temporaryElementInserted=false;

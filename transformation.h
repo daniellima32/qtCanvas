@@ -558,7 +558,7 @@ bool someLabelOfElementWasClicked(const QPointF &mouseViwPortPos)
 
         l = el.label;
         //for (auto line: l)   //l é um vector of LabelLine
-        for (int index = 0; index < l.size(); ++index)
+        for (size_t index = 0; index < l.size(); ++index)
         {
             //i-ésima entrada de Labelline
 
@@ -597,7 +597,7 @@ bool someLabelOfLinkWasClicked(const QPointF &mouseViwPortPos)
                            (origEl.point.y() + destEl.point.y())/2);
 
         l = link.label;
-        for (int index = 0; index < l.size(); ++index)
+        for (size_t index = 0; index < l.size(); ++index)
         {
             //i-ésima entrada de Labelline
 
@@ -626,7 +626,7 @@ bool getLabelOfElementThatWasClicked(uint &idOfElementOwnerOfLabel, uint &idLabe
 
         l = el.label;
         //for (auto line: l)   //l é um vector of LabelLine
-        for (int index = 0; index < l.size(); ++index)
+        for (size_t index = 0; index < l.size(); ++index)
         {
             //i-ésima entrada de Labelline
 
@@ -668,7 +668,7 @@ bool getLabelOfLinkThatWasClicked(uint &idOfLinkOwnerOfLabel, uint &idLabel, QPo
 
         l = link.label;
         //for (auto line: l)   //l é um vector of LabelLine
-        for (int index = 0; index < l.size(); ++index)
+        for (size_t index = 0; index < l.size(); ++index)
         {
             //i-ésima entrada de Labelline
 
