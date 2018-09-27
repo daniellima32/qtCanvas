@@ -293,14 +293,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     bool ret = true;
     if (event->buttons() == Qt::RightButton)
     {
-        //Checar se é uma posição inválida
-        /*if (checkInvalidMousePos(viewPortPos)) return;
-        else
-        {
-            int a = 10;
-            a = 10;
-        }*/
-
         //Deve descobrir se deve mover elementos ou fazer pan de window
 
         //Para mover elementos o último presionar deve ter sido em um nó
@@ -380,7 +372,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         //Inicio de detectar alteração de posição de label de elemento node
         else if(labelOfElementBeeingChanged || someLabelOfElementWasClicked(windowToViewPort1(lastMouseWindowPosition)))
         {
-            //QPointF viewPortPos ((float)event->x(), (float)event->y());
             if (!labelOfElementBeeingChanged)
             {
                 ret = getLabelOfElementThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
@@ -405,7 +396,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             QPointF viewPortPos ((float)event->x(), (float)event->y());
             if (!labelOfLinkBeeingChanged)
             {
-                //getLabelOfElementThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
                 ret = getLabelOfLinkThatWasClicked(idOfLinkOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
             }
 
@@ -419,18 +409,35 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
                 QPointF pDiff = labelDiffBackup;
                 translatePoint(translateFactor, pDiff);
-                //mapIDToElement[idOfElementOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
                 mapIDToLink[idOfLinkOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
             }
         }
         else
         {
             //Fazer pan de window
-            //Checar se é uma posição inválida
-            //if (checkInvalidMousePos(viewPortPos)) return;
+            //Checar se é uma posição inválida de mouse
+            if (checkInvalidMousePos(viewPortPos)) return;
 
             QPointF diff = {lastMouseWindowPosition.x() - windowPos.x(), lastMouseWindowPosition.y() - windowPos.y()}; //better
             translateRect(diff, transformation::window);
+
+            QPointF newPos;
+            //Ver se após a translação algum elemento selecionado não está ok
+            for (auto &el: elements)
+            {
+                if (el.isSelected)
+                {
+                    newPos = windowToViewPort1(el.point);
+                    if (!(newPos.x() >= viewPort.point.x() &&
+                        newPos.y() >= viewPort.point.y() &&
+                        newPos.x() <= viewPort.point.x() + viewPort.width &&
+                        newPos.y() <= viewPort.point.y() + viewPort.height))
+                    {
+                        translateRect({-diff.x(), -diff.y()}, transformation::window);
+                        break;
+                    }
+                }
+            }
         }
     }
     else if (event->buttons() == Qt::LeftButton)

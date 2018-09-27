@@ -657,7 +657,7 @@ QPoint viewPortToWindow2(QPointF viewPoint)
 
 
 //retorna true se é uma posição inválida
-bool checkInvalidMousePos(QPointF viewPortPos)
+bool checkInvalidSelectedElementsAndMousePos(QPointF viewPortPos)
 {
     //Se tiver alum elemento selecionado, nenhum deles pode ficar fora do viewport
     bool useMousePos = true;
@@ -708,6 +708,18 @@ bool checkInvalidMousePos(QPointF viewPortPos)
     return false; //PODE USAR ESSA POSIÇÃO
 }
 
+bool checkInvalidMousePos(QPointF viewPortPos)
+{
+    if (viewPortPos.x() < viewPort.point.x() ||
+           viewPortPos.y() < viewPort.point.y() ||
+           viewPortPos.x() > viewPort.point.x() + viewPort.width ||
+           viewPortPos.y() > viewPort.point.y() + viewPort.height)
+    {
+        return true; //NÃO PODE USAR ESSA POSIÇÃO
+    }
+    else
+        return false;
+}
 
 bool someLabelOfElementWasClicked(const QPointF &mouseViwPortPos)
 {
