@@ -1,6 +1,7 @@
 #ifndef MATHOPERATIONS_H
 #define MATHOPERATIONS_H
 
+#define nearZero 0.000001
 
 class NumericalUtils
 {

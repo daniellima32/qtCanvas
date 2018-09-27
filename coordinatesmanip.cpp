@@ -40,8 +40,11 @@ std::vector<QPointF> CoordinatesManip::getArrowPoints(QLineF line)
     QPointF v0 (ponto2.x() - ponto1.x(), ponto2.y() - ponto1.y());
 
     //Dependendo do denominador, não pode fazer a normalização
-    if (NumericalUtils::compareDoubles(v0.x(), 0) && NumericalUtils::compareDoubles(v0.x(), 0))
-        return vec;
+    if (NumericalUtils::compareDoubles(v0.x(), 0) && NumericalUtils::compareDoubles(v0.y(), 0))
+    {
+        v0.setX(nearZero);
+        v0.setY(nearZero);
+    }
 
     v0 = normalize(v0);
 

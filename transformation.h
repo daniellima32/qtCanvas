@@ -267,11 +267,19 @@ std::vector<LinkData> links =
     },
     {
         1,
-        2,
+        1,
         3,
         false,
         LinkType::ARTIFICIAL,
         {{{-5, 15}, "Link 1"}}
+    },
+    {
+        2,
+        2,
+        3,
+        false,
+        LinkType::ARTIFICIAL,
+        {{{-5, 15}, "Link 2"}}
     }
 };
 
@@ -996,7 +1004,7 @@ void translatePoint(QPointF translateFactor, QPointF& point)
     point.setY(point.y() + translateFactor.y());
 }
 
-void zoom(float zoomFactor, double x, double y)
+void zoom(double zoomFactor, double x, double y)
 {
     QPointF viewPortPoint (x, y);
     QPointF windowPoint = viewPortToWindow1(viewPortPoint);

@@ -132,7 +132,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 
             //Criar a cadeia de titulo
             QStringList list = newName.split("\n");
-            float diffHeight = 15.0;
+            double diffHeight = 15.0;
             //for (auto part: list)
             for (int index = list.size()-1; index >= 0; index--)
             {
@@ -162,7 +162,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     selectedRect.clear(); //Apaga a indicação de possível região selecionada
 
     //Mudando local do release
-    QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
+    QPointF windowPos = viewPortToWindow1({static_cast<double>(event->x()),
+                                           static_cast<double>(event->y())});
     if (!elementsBeeingMoved)
     {
         ElementsData el;
@@ -394,7 +395,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         //Detectar clique em label de link
         else if(labelOfLinkBeeingChanged || someLabelOfLinkWasClicked(windowToViewPort1(lastMouseWindowPosition)))
         {
-            QPointF viewPortPos ((float)event->x(), (float)event->y());
+            QPointF viewPortPos (static_cast<double>(event->x()),
+                                 static_cast<double>(event->y()));
             if (!labelOfLinkBeeingChanged)
             {
                 ret = getLabelOfLinkThatWasClicked(idOfLinkOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
@@ -508,7 +510,12 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
             for (auto &el: elements)
             {
-                if (selectionRect.contains(el.point.x(), el.point.y()))
+                if (
+                        selectionRect.contains(
+                            static_cast<int> (el.point.x()),
+                            static_cast<int> (el.point.y())
+                                              )
+                   )
                 {
                     el.isSelected = true;
                 }
@@ -614,8 +621,8 @@ void MainWindow::dealWithcontextMenuEvent(QMouseEvent *event)
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
-    static float zoomIn = 0.9;
-    static float zoomOut = 1.1;
+    static double zoomIn = 0.9;
+    static double zoomOut = 1.1;
     if (event->angleDelta().y() > 0)
     {
         zoom(zoomIn, event->x(), event->y());
@@ -629,7 +636,8 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
+    QPointF windowPos = viewPortToWindow1({static_cast<double>(event->x()),
+                                           static_cast<double>(event->y())});
     lastMouseWindowPosition = windowPos;
     if (event->buttons() == Qt::RightButton)
     {
@@ -711,8 +719,8 @@ void MainWindow::refreshPixmap()
                            (originElement.point.y() + destinyElement.point.y())/2);
         for(auto entry : link.label)
         {
-            QPoint point ((int) windowToViewPort1(halfPoint).x() - entry.linPointDif.x(),
-                    (int) windowToViewPort1(halfPoint).y() - entry.linPointDif.y());
+            QPoint point (static_cast<int>(windowToViewPort1(halfPoint).x() - entry.linPointDif.x()),
+                    static_cast<int>(windowToViewPort1(halfPoint).y() - entry.linPointDif.y()));
             painter.drawText(point.x(), point.y(), entry.content);
 
             //Se o elemento está selecionado, deve desenhar as opções para alterar posição do título
@@ -778,14 +786,16 @@ void MainWindow::refreshPixmap()
                 painter.setPen(pen);
             }
 
-            painter.drawEllipse (windowToViewPort1({el.point}), 2*radius, 2*radius);
+            painter.drawEllipse (windowToViewPort1({el.point}),
+                                 2* static_cast<double>(radius),
+                                 2* static_cast<double>(radius));
         }
 
         //Escrever o label
         for(auto entry : el.label)
         {
-            QPoint point ((int) windowToViewPort1(el.point).x() - entry.linPointDif.x(),
-                    (int) windowToViewPort1(el.point).y() - entry.linPointDif.y());
+            QPoint point (static_cast<int>(windowToViewPort1(el.point).x() - entry.linPointDif.x()),
+                    static_cast<int>(windowToViewPort1(el.point).y() - entry.linPointDif.y()));
             painter.drawText(point.x(), point.y(), entry.content);
 
             //Se o elemento está selecionado, deve desenhar as opções para alterar posição do título
