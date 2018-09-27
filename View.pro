@@ -25,11 +25,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    NumericalUtils.cpp \
+    coordinatesmanip.cpp
 
 HEADERS += \
         mainwindow.h \
-    transformation.h
+    transformation.h \
+    NumericalUtils.h \
+    coordinatesmanip.h
 
 FORMS += \
         mainwindow.ui

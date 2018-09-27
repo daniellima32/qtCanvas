@@ -888,7 +888,7 @@ std::vector<QPointF> getDemandPoints(QPointF point)
     return points;
 }
 
-double norma(QPointF entry)
+/*double norma(QPointF entry)
 {
     return sqrt(entry.x()*entry.x() + entry.y()*entry.y());
 }
@@ -905,8 +905,8 @@ QPointF product(QPointF point, int n)
     QPointF ret = {point.x() * n, point.y() * n};
     return ret;
 }
-
-std::vector<QPointF> getArrowPoints(QLineF line)
+*/
+/*std::vector<QPointF> getArrowPoints(QLineF line)
 {
     std::vector<QPointF> vec;
     QPointF p0, p1, p2;
@@ -939,8 +939,8 @@ std::vector<QPointF> getArrowPoints(QLineF line)
     p1 = {center.x() + v1.x(), center.y() + v1.y()};
     p2 = {center.x() + v2.x(), center.y() + v2.y()};
 
-    float xMin = p0.x(), yMin = p0.y();
-    float xMax = p0.x(), yMax = p0.y();
+    double xMin = p0.x(), yMin = p0.y();
+    double xMax = p0.x(), yMax = p0.y();
 
     vec.push_back(p0);
     vec.push_back(p1);
@@ -968,7 +968,7 @@ std::vector<QPointF> getArrowPoints(QLineF line)
     }
 
     return vec;
-}
+}*/
 
 void scaleRect(QPointF scaleFactor, Rect& rect)
 {
