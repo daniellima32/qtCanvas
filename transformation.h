@@ -795,9 +795,6 @@ std::vector<QPointF> getArrowPoints(QLineF line)
     }
 
     return vec;
-
-    //dc.DrawPolygon(3, p);
-    //m_arrowRect = wxRect(xMin, yMin, xMax - xMin, yMax - yMin);
 }
 
 void scaleRect(QPointF scaleFactor, Rect& rect)

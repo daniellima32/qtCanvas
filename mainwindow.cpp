@@ -622,6 +622,9 @@ void MainWindow::refreshPixmap()
         }
 
         QLineF line(windowToViewPort1(originElement.point), windowToViewPort1(destinyElement.point));
+        std::vector<QPointF> vec = getArrowPoints(line);
+
+        if (vec.size() == 0) continue;
         painter.drawConvexPolygon(getArrowPoints(line).data(), 3);
 
         //Desenhar label de link
