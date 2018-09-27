@@ -71,7 +71,8 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
                 if (origin.isSelected || destiny.isSelected)
                 {
                     //Removendo links (não selecionados) que estão entre os elementos selecionados
-                    links.erase(links.begin()+index);
+                    //links.erase(links.begin()+index);
+                    links.erase(links.begin()+static_cast<int>(index));
                     index--;
                 }
             }
@@ -81,7 +82,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
         {
             if (links[index].isSelected)
             {
-                links.erase(links.begin()+index);
+                links.erase(links.begin()+static_cast<int>(index));
                 index--;
             }
         }
@@ -90,7 +91,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
         {
             if (elements[index].isSelected)
             {
-                elements.erase(elements.begin()+index);
+                elements.erase(elements.begin()+static_cast<int>(index));
                 index--; //Esse index-- é usado porque um novo elemento de indice index
                 //será atribuído pela função erase
             }
@@ -123,7 +124,10 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
             Label labelVec;
 
             uint nextId = getNextAvailableIDOFNode();
-            QPointF windowPos = viewPortToWindow1({(double)event->x(), (double)event->y()});
+            QPointF windowPos = viewPortToWindow1({
+                                                      static_cast<double>(event->x()),
+                                                      static_cast<double>(event->y())
+                                                  });
 
             //Criar a cadeia de titulo
             QStringList list = newName.split("\n");

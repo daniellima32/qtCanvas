@@ -4,6 +4,9 @@
 #include <QPointF>
 #include <QRect>
 #include <QLineF>
+#include <QString>
+#include <iostream>
+#include <map>
 
 enum ElementType
 {
@@ -74,18 +77,16 @@ typedef struct tagPROJECTION
 double vDotProduct(PVECTOR2D v0, PVECTOR2D v1)
 {
     double dotprod;
-    dotprod = (v0 == NULL || v1 == NULL)
-              ? 0.0
-              : (v0->x * v1->x) + (v0->y * v1->y);
+    dotprod = (v0 == nullptr || v1 == nullptr) ? 0.0: (v0->x * v1->x) + (v0->y * v1->y);
     return(dotprod);
 }
 
 PVECTOR2D vSubtractVectors(PVECTOR2D v0,
                            PVECTOR2D v1, PVECTOR2D v)
 {
-    if(v0 == NULL || v1 == NULL)
+    if(v0 == nullptr || v1 == nullptr)
     {
-        v = (PVECTOR2D)NULL;
+        v = (PVECTOR2D)nullptr;
     }
     else
     {
@@ -100,13 +101,13 @@ double   vVectorSquared(PVECTOR2D v0)
 {
     double dSqLen;
 
-    if(v0 == NULL)
+    if(v0 == nullptr)
     {
         dSqLen = 0.0;
     }
     else
     {
-        dSqLen = (double)(v0->x * v0->x) + (double)(v0->y * v0->y);
+        dSqLen = static_cast<double>(v0->x * v0->x) + static_cast<double>(v0->y * v0->y);
     }
 
     return (dSqLen);
@@ -116,7 +117,7 @@ double vVectorMagnitude(PVECTOR2D v0)
 {
     double dMagnitude;
 
-    if(v0 == NULL)
+    if(v0 == nullptr)
     {
         dMagnitude = 0.0;
     }
@@ -217,12 +218,12 @@ bool isPointOfLink(const QPointF &linkOrigin,
     if (rect.contains(point))
     {
         POINT source, destiny, click;
-        source.x = linkOrigin.x();
-        source.y = linkOrigin.y();
-        destiny.x = linkDestiny.x();
-        destiny.y = linkDestiny.y();
-        click.x = point.x();
-        click.y = point.y();
+        source.x = static_cast<long>(linkOrigin.x());
+        source.y = static_cast<long>(linkOrigin.y());
+        destiny.x = static_cast<long>(linkDestiny.x());
+        destiny.y = static_cast<long>(linkDestiny.y());
+        click.x = static_cast<long>(point.x());
+        click.y = static_cast<long>(point.y());
 
         return HitTestLine(source, destiny, click, 1);
     }
