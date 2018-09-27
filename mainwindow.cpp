@@ -286,10 +286,21 @@ void MainWindow::resizeEvent(QResizeEvent* )
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    QPointF windowPos = viewPortToWindow1({(float)event->x(), (float)event->y()});
+    QPointF viewPortPos = {static_cast<double>(event->x()),
+                static_cast<double>(event->y())};
+    QPointF windowPos = viewPortToWindow1(viewPortPos);
+
     bool ret = true;
     if (event->buttons() == Qt::RightButton)
     {
+        //Checar se é uma posição inválida
+        /*if (checkInvalidMousePos(viewPortPos)) return;
+        else
+        {
+            int a = 10;
+            a = 10;
+        }*/
+
         //Deve descobrir se deve mover elementos ou fazer pan de window
 
         //Para mover elementos o último presionar deve ter sido em um nó
@@ -312,6 +323,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             }
 
             //Deve transladar os pontos selecionados
+            bool allOk = true;
+
+            //Verifica se pode mover
             for (auto &el: elements)
             {
                 if (el.isSelected)
@@ -320,14 +334,53 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                                              windowPos.y() - lastMouseWindowPosition.y());
 
                     el.point = mapOfOrigPosOfMovedElements[el.id];   //Restaura valor original
-                    translatePoint(translateFactor, el.point);       //transladando ponto
+
+                    //Aqui faço uma verificação para saber se esse deslocamento é permitido,
+                    //uma vez que o elemento está selecionado
+                    //se sim, eu faço o movimento
+
+                    QPointF test = el.point;
+                    translatePoint(translateFactor, test);       //transladando ponto
+                    test = windowToViewPort1(test); //obtenho a ref dele no viewport
+                    //verifico se está ok (dentro do viewport)
+                    if (!(test.x() >= viewPort.point.x() &&
+                        test.y() >= viewPort.point.y() &&
+                        test.x() <= viewPort.point.x() + viewPort.width &&
+                        test.y() <= viewPort.point.y() + viewPort.height))
+                    {
+                        allOk = false;
+                        break;
+                    }
+                }
+            }
+
+            //Translada os elementos
+            for (auto &el: elements)
+            {
+                if (el.isSelected)
+                {
+                    QPointF translateFactor (windowPos.x() - lastMouseWindowPosition.x(),
+                                             windowPos.y() - lastMouseWindowPosition.y());
+
+                    el.point = mapOfOrigPosOfMovedElements[el.id];   //Restaura valor original
+
+                    //verifico se está ok (dentro do viewport)
+                    if (allOk)
+                    {
+                        translatePoint(translateFactor, el.point);
+                        mapOfLastValidPosOfMovedElements[el.id] = el.point;
+                    }
+                    else
+                    {
+                        el.point = mapOfLastValidPosOfMovedElements[el.id];
+                    }
                 }
             }
         } // fim de mover elementos
         //Inicio de detectar alteração de posição de label de elemento node
         else if(labelOfElementBeeingChanged || someLabelOfElementWasClicked(windowToViewPort1(lastMouseWindowPosition)))
         {
-            QPointF viewPortPos ((float)event->x(), (float)event->y());
+            //QPointF viewPortPos ((float)event->x(), (float)event->y());
             if (!labelOfElementBeeingChanged)
             {
                 ret = getLabelOfElementThatWasClicked(idOfElementOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
@@ -373,6 +426,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         else
         {
             //Fazer pan de window
+            //Checar se é uma posição inválida
+            //if (checkInvalidMousePos(viewPortPos)) return;
 
             QPointF diff = {lastMouseWindowPosition.x() - windowPos.x(), lastMouseWindowPosition.y() - windowPos.y()}; //better
             translateRect(diff, transformation::window);

@@ -334,6 +334,7 @@ float radius = 5.0;
 
 //Este mapa deve salvar as posições originais dos elementos que estão sendo salvos
 std::map<uint, QPointF> mapOfOrigPosOfMovedElements;
+std::map<uint, QPointF> mapOfLastValidPosOfMovedElements;
 
 uint getNextAvailableIDOFNode()
 {
@@ -504,6 +505,112 @@ bool someElementIsSelected()
     return false;
 }
 
+bool someLinkIsSelected()
+{
+    for (auto &link : links)
+    {
+        if (link.isSelected)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+double getMinXBetweenTwoPoints(QPointF p1, QPointF p2)
+{
+    if (p1.x() <= p2.x()) return p1.x();
+    else return p2.x();
+}
+double getMinYBetweenTwoPoints(QPointF p1, QPointF p2)
+{
+    if (p1.y() <= p2.y()) return p1.y();
+    else return p2.y();
+}
+double getMaxYBetweenTwoPoints(QPointF p1, QPointF p2)
+{
+    if (p1.y() >= p2.y()) return p1.y();
+    else return p2.y();
+}
+double getMaxXBetweenTwoPoints(QPointF p1, QPointF p2)
+{
+    if (p1.x() >= p2.x()) return p1.x();
+    else return p2.x();
+}
+
+bool getMinMaxSelectedPointsOfLinks(QPointF &minPoint, QPointF &maxPoint)
+{
+    bool wasFoundOneLinkSelected = false;
+    ElementsData origin;
+    ElementsData destiny;
+
+    QPointF minPointTemp, maxPointTemp;
+
+    for(size_t index = 0; index < links.size(); index++)
+    {
+        if (links[index].isSelected)
+        {
+            aquireElementByID(links[index].origin, origin);
+            aquireElementByID(links[index].destiny, destiny);
+
+            if(!wasFoundOneLinkSelected)
+            {
+                wasFoundOneLinkSelected = true;
+
+                minPoint.setX(getMinXBetweenTwoPoints(origin.point, destiny.point));
+                minPoint.setY(getMinYBetweenTwoPoints(origin.point, destiny.point));
+                maxPoint.setX(getMaxXBetweenTwoPoints(origin.point, destiny.point));
+                maxPoint.setY(getMaxYBetweenTwoPoints(origin.point, destiny.point));
+            }
+            else
+            {
+                minPointTemp = QPointF(getMinXBetweenTwoPoints(origin.point, destiny.point),
+                                       getMinYBetweenTwoPoints(origin.point, destiny.point));
+                maxPointTemp = QPointF(getMaxXBetweenTwoPoints(origin.point, destiny.point),
+                                       getMaxYBetweenTwoPoints(origin.point, destiny.point));
+
+                minPoint.setX(getMinXBetweenTwoPoints(minPointTemp, minPoint));
+                minPoint.setY(getMinYBetweenTwoPoints(minPointTemp, minPoint));
+                maxPoint.setX(getMaxXBetweenTwoPoints(maxPointTemp, maxPoint));
+                maxPoint.setY(getMaxYBetweenTwoPoints(maxPointTemp, maxPoint));
+            }
+        }
+    }
+
+    return wasFoundOneLinkSelected;
+}
+
+
+bool getMinMaxSelectedPointsOfElements(QPointF &minPoint, QPointF &maxPoint)
+{
+    bool wasFoundOneElSelected = false;
+
+    for(size_t index = 0; index < elements.size(); index++)
+    {
+        if (elements[index].isSelected)
+        {
+            if(!wasFoundOneElSelected)
+            {
+                wasFoundOneElSelected = true;
+                minPoint.setX(elements[0].point.x());
+                minPoint.setY(elements[0].point.y());
+                maxPoint.setX(elements[0].point.x());
+                maxPoint.setY(elements[0].point.y());
+            }
+            else
+            {
+                if (elements[0].point.x() < minPoint.x())  minPoint.setX(elements[0].point.x());
+                if (elements[0].point.y() < minPoint.y())  minPoint.setY(elements[0].point.y());
+
+                if (elements[0].point.x() > maxPoint.x())  maxPoint.setX(elements[0].point.x());
+                if (elements[0].point.y() > maxPoint.y())  maxPoint.setY(elements[0].point.y());
+            }
+        }
+    }
+
+    return wasFoundOneElSelected;
+}
+
 struct Rect
 {
     QPointF point;
@@ -547,6 +654,60 @@ QPoint viewPortToWindow2(QPointF viewPoint)
     windowPoint.setY(((viewPort.height * window.point.y()) - ((viewPoint.y() - viewPort.point.y()) * window.height)) / viewPort.height);
     return windowPoint;
 }
+
+
+//retorna true se é uma posição inválida
+bool checkInvalidMousePos(QPointF viewPortPos)
+{
+    //Se tiver alum elemento selecionado, nenhum deles pode ficar fora do viewport
+    bool useMousePos = true;
+    QPointF minPoint, maxPoint;
+    if (someElementIsSelected())
+    {
+        useMousePos = false;
+
+        getMinMaxSelectedPointsOfElements(minPoint, maxPoint);
+
+        if (someLinkIsSelected())
+        {
+            QPointF minPointTemp, maxPointTemp;
+            getMinMaxSelectedPointsOfLinks(minPointTemp, maxPointTemp);
+            minPoint.setX(getMinXBetweenTwoPoints(minPoint, minPointTemp));
+            minPoint.setY(getMinYBetweenTwoPoints(minPoint, minPointTemp));
+            maxPoint.setX(getMinXBetweenTwoPoints(maxPoint, maxPointTemp));
+            maxPoint.setY(getMinYBetweenTwoPoints(maxPoint, maxPointTemp));
+        }
+    }
+    else if (someLinkIsSelected())
+    {
+        useMousePos = false;
+        getMinMaxSelectedPointsOfLinks(minPoint, maxPoint);
+    }
+
+    minPoint = windowToViewPort1(minPoint);
+    maxPoint = windowToViewPort1(maxPoint);
+
+    if (!useMousePos)
+    {
+        if (minPoint.x() < viewPort.point.x() ||
+            minPoint.y() < viewPort.point.y() ||
+            maxPoint.x() > viewPort.point.x() + viewPort.width ||
+            maxPoint.y() > viewPort.point.y() + viewPort.height)
+        {
+            return true; //NÃO PODE USAR ESSA POSIÇÃO
+        }
+    }
+    else if (viewPortPos.x() < viewPort.point.x() ||
+       viewPortPos.y() < viewPort.point.y() ||
+       viewPortPos.x() > viewPort.point.x() + viewPort.width ||
+       viewPortPos.y() > viewPort.point.y() + viewPort.height)
+    {
+        return true; //NÃO PODE USAR ESSA POSIÇÃO
+    }
+
+    return false; //PODE USAR ESSA POSIÇÃO
+}
+
 
 bool someLabelOfElementWasClicked(const QPointF &mouseViwPortPos)
 {
