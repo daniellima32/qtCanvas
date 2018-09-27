@@ -45,16 +45,24 @@ struct LinkData
     Label label;
 };
 
-#define MPOINT2POINT(mpt, pt)   ((pt).x = (mpt).x, (pt).y = (mpt).y)
-#define POINT2MPOINT(pt, mpt)   ((mpt).x = (SHORT)(pt).x, (mpt).y = (SHORT)(pt).y)
-#define POINTS2VECTOR2D(pt0, pt1, vect) ((vect).x = (double)((pt1).x - (pt0).x), \
-                                         (vect).y = (double)((pt1).y - (pt0).y))
+
+
+//#define MPOINT2POINT(mpt, pt)   ((pt).x = (mpt).x, (pt).y = (mpt).y)
+//#define POINT2MPOINT(pt, mpt)   ((mpt).x = (SHORT)(pt).x, (mpt).y = (SHORT)(pt).y)
+/*#define POINTS2VECTOR2D(pt0, pt1, vect) ((vect).x = (double)((pt1).x - (pt0).x), \
+                                         (vect).y = (double)((pt1).y - (pt0).y))*/
 
 typedef struct tagPOINT
 {
     long  x;
     long  y;
 } POINT, *PPOINT, *LPPOINT;
+
+void mPointToPoint(POINT mpt, POINT &pt)
+{
+    pt.x = mpt.x;
+    pt.y = mpt.y;
+}
 
 typedef struct tagVECTOR2D
 {
@@ -63,6 +71,12 @@ typedef struct tagVECTOR2D
     double     y;
 
 } VECTOR2D, *PVECTOR2D;
+
+void pointsToVector2D(POINT p0, POINT p1, VECTOR2D &v2d)
+{
+    v2d.x = p1.x - p0.x;
+    v2d.y = p1.y - p0.y;
+}
 
 typedef struct tagPROJECTION
 {
@@ -165,8 +179,10 @@ double vDistFromPointToLine(LPPOINT pt0, LPPOINT pt1, LPPOINT ptTest)
 {
     VECTOR2D ttLine, ttTest;
     PROJECTION pProjection;
-    POINTS2VECTOR2D(*pt0, *pt1, ttLine);
-    POINTS2VECTOR2D(*pt0, *ptTest, ttTest);
+    //POINTS2VECTOR2D(*pt0, *pt1, ttLine);
+    pointsToVector2D(*pt0, *pt1, ttLine);
+    //POINTS2VECTOR2D(*pt0, *ptTest, ttTest);
+    pointsToVector2D(*pt0, *ptTest, ttTest);
     vProjectAndResolve(&ttTest, &ttLine,
                        &pProjection);
     return(pProjection.LenPerpProjection);
@@ -186,15 +202,18 @@ bool HitTestLine(POINT pt0, POINT pt1,
     //
     //Convert the line into a vector using the two endpoints.
     //
-    POINTS2VECTOR2D(pt0, pt1, tt0);
+    //POINTS2VECTOR2D(pt0, pt1, tt0);
+    pointsToVector2D(pt0, pt1, tt0);
     //
     //Convert the mouse points (short) into a POINT structure (long).
     //
-    MPOINT2POINT(ptMouse , PtM);
+    //MPOINT2POINT(ptMouse , PtM);
+    mPointToPoint(ptMouse , PtM);
     //
     //Convert the line from the left endpoint to the mouse point into a vector.
     //
-    POINTS2VECTOR2D(pt0, PtM, tt1);
+    //POINTS2VECTOR2D(pt0, PtM, tt1);
+    pointsToVector2D(pt0, PtM, tt1);
     //
     //Obtain the distance of the point from the line.
     //
@@ -248,10 +267,11 @@ bool isPointOfLink(const QPointF &linkOrigin,
 //QPointF &mousePos é dado em coordenada de mundo
 bool isClickedInElement(const QPointF &elementCenter,
                         const QPointF &mousePos,
-                        float radius = 5.0)
+                        double radius = 5.0)
 {
-    float distance = std::sqrt(std::pow(elementCenter.x() - mousePos.x(), 2)
-                                + std::pow(elementCenter.y() - mousePos.y(), 2));
+    double num = std::pow(static_cast<float>(elementCenter.x() - mousePos.x()), 2)
+               + std::pow(static_cast<float>(elementCenter.y() - mousePos.y()), 2);
+    double distance = std::sqrt(num);
     return distance <= radius;
 }
 
