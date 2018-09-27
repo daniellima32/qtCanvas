@@ -533,8 +533,15 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                 aquireElementByID(link.origin, originLink);
                 //Descobrir destino
                 aquireElementByID(link.destiny, destinyLink);
-                if (selectionRect.contains(originLink.point.x(), originLink.point.y()) &&
-                        selectionRect.contains(destinyLink.point.x(), destinyLink.point.y()))
+                if (selectionRect.contains(
+                            static_cast<int>(originLink.point.x()),
+                            static_cast<int>(originLink.point.y())
+                                           ) &&
+                    selectionRect.contains(
+                            static_cast<int>(destinyLink.point.x()),
+                            static_cast<int>(destinyLink.point.y())
+                                          )
+                   )
                 {
                     link.isSelected = true;
                 }
