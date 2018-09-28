@@ -456,7 +456,7 @@ bool aquireElementByID(const uint id, ElementsData& el)
     return false;
 }
 
-bool someLinkWasClicked(const QPointF &mousePos)
+bool someLinkWasClicked(const QPointF &mousePos, bool considerPath = true)
 {
     ElementsData origin, destiny;
     bool ret1, ret2;
@@ -466,16 +466,51 @@ bool someLinkWasClicked(const QPointF &mousePos)
         ret2 = aquireElementByID(link.destiny, destiny);
         if (ret1 && ret2)
         {
-            if(isPointOfLink(origin.point, destiny.point, mousePos))
+            if(!considerPath) //Tradicional, sem considerar partes interiores
             {
-                return true;
+                if(isPointOfLink(origin.point, destiny.point, mousePos))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (link.path.size() == 0)
+                {
+                    if(isPointOfLink(origin.point, destiny.point, mousePos))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    //Considerando partes interiores
+                    QPointF p1, p2;
+                    p1 = origin.point;
+                    for(size_t index = 0; index < link.path.size(); index++)
+                    {
+                        p2 = link.path[index];
+
+                        if(isPointOfLink(p1, p2, mousePos))
+                        {
+                            return true;
+                        }
+
+                        p1 = p2;
+                    }
+
+                    if(isPointOfLink(link.path[link.path.size()-1], destiny.point, mousePos))
+                    {
+                        return true;
+                    }
+                }
             }
         }
     }
     return false;
 }
 
-bool aquireClickedLink(const QPointF &mousePos, LinkData &l)
+bool aquireClickedLink(const QPointF &mousePos, LinkData &l, bool considerPath = false)
 {
     ElementsData origin, destiny;
     bool ret1, ret2;
@@ -485,10 +520,48 @@ bool aquireClickedLink(const QPointF &mousePos, LinkData &l)
         ret2 = aquireElementByID(link.destiny, destiny);
         if (ret1 && ret2)
         {
-            if(isPointOfLink(origin.point, destiny.point, mousePos))
+            if(!considerPath) //Tradicional, sem considerar partes interiores
             {
-                l = link;
-                return true;
+                if(isPointOfLink(origin.point, destiny.point, mousePos))
+                {
+                    l = link;
+                    return true;
+                }
+            }
+            else
+            {
+                if (link.path.size() == 0)
+                {
+                    if(isPointOfLink(origin.point, destiny.point, mousePos))
+                    {
+                        l = link;
+                        return true;
+                    }
+                }
+                else
+                {
+                    //Considerando partes interiores
+                    QPointF p1, p2;
+                    p1 = origin.point;
+                    for(size_t index = 0; index < link.path.size(); index++)
+                    {
+                        p2 = link.path[index];
+
+                        if(isPointOfLink(p1, p2, mousePos))
+                        {
+                            l = link;
+                            return true;
+                        }
+
+                        p1 = p2;
+                    }
+
+                    if(isPointOfLink(link.path[link.path.size()-1], destiny.point, mousePos))
+                    {
+                        l = link;
+                        return true;
+                    }
+                }
             }
         }
     }

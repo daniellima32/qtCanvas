@@ -185,7 +185,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         if (!foundEl)
         {
             LinkData l;
-            bool ret = aquireClickedLink(windowPos, l);
+            //bool ret = aquireClickedLink(windowPos, l); //sem considerar partes interiores
+            bool ret = aquireClickedLink(windowPos, l, true); //considerando partes interiores
 
             for (auto &link: links)
             {
@@ -645,7 +646,8 @@ void MainWindow::dealWithcontextMenuEvent(QMouseEvent *event)
             });
         }
     }
-    else if (someLinkWasClicked(windowPos))
+    //else if (someLinkWasClicked(windowPos)) //sem considerar partes interiores
+    else if (someLinkWasClicked(windowPos, true)) // considerando partes interiores
     {
         LinkData link;
         aquireClickedLink(windowPos, link);
