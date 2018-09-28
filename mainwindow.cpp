@@ -157,12 +157,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
             newName = dialog.textValue();
             Label labelVec;
 
-            uint nextId = getNextAvailableIDOFNode();
-            /*QPointF windowPos = viewPortToWindow1({
-                                                      static_cast<double>(event->x()),
-                                                      static_cast<double>(event->y())
-                                                  });*/
-
             //Criar a cadeia de titulo
             QStringList list = newName.split("\n");
             double diffHeight = 15.0;
