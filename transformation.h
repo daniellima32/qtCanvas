@@ -242,17 +242,30 @@ bool isPointOfLink(const QPointF &linkOrigin,
 
         return HitTestLine(source, destiny, click, 1);
     }
-    else if (std::abs(linkOrigin.x() - linkDestiny.x()) < 0.0001)
+    //Caso com link na horizontal: correto
+    //Link Destiny a direita de link origin
+    else if (std::abs(linkOrigin.y() - linkDestiny.y()) < 0.0001)
     {
         //A função contans de QRectF não lida muito bem com precisão de doubles
-        if((std::abs(linkOrigin.x() - point.x()) < 0.5))  //Coloco a precisão de "meio pixel"
+        //if((std::abs(linkOrigin.x() - point.x()) < 0.5))  //Coloco a precisão de "meio pixel"
+        if (point.x() > linkOrigin.x() && point.x() < linkDestiny.x())
         {
             //deve checar o eixo y
 
-            return (point.y() > linkOrigin.y() && point.y() < linkDestiny.y());
+            //return (point.y() > linkOrigin.y() && point.y() < linkDestiny.y());
+            return std::abs(linkOrigin.y() - point.y()) < 0.5;
         }
 
         //deve checar o y tmb
+    }
+    //Caso com link na vertical
+    //Link destiny abaixo de link origin
+    else if (std::abs(linkOrigin.x() - linkDestiny.x()) < 0.0001)
+    {
+        if (point.y() > linkOrigin.y() && point.y() < linkDestiny.y())
+        {
+            return std::abs(linkOrigin.x() - point.x()) < 0.5;
+        }
     }
 
     return false;
