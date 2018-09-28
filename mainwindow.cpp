@@ -100,15 +100,103 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
         this->refreshPixmap();
     }
+    else if (event->key() == Qt::Key_C)  //Usarei a tecla c para alterar o label do elemento
+    {
+        //Deve verificar se existe elemento selecionado
+        enum TYPE {NODE, LINK};
+        TYPE type;
+        ElementsData el;
+        LinkData link;
+        int elSelCount = selectedElementsCount();
+        int linkSelCount = selectedLinksCount();
+        QPointF windowPos;
+        if(elSelCount > 0 && linkSelCount == 0)
+        {
+            type = NODE;
+            aquireSelectedElement(el);
+            windowPos = el.point;
+        }
+        else if (elSelCount == 0 && linkSelCount > 0)
+        {
+            type = LINK;
+            aquireLinkSelected(link);
+            windowPos = {0,0};
+        }
+        else
+        {
+            QString message;
+            if (elSelCount > 1 || linkSelCount > 1)
+                message = "Selecione apenas um elemento";
+            else if (elSelCount == 0 && linkSelCount == 0)
+                message = "Selecione um elemento";
+
+            //Selecione um link ou elemento
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Atenção");
+            msgBox.setText(message);
+            msgBox.exec();
+
+            return;
+        }
+
+        const QString title = "Label de elemento";
+        const QString label = "Insira o label do elemento";
+        const QString text = "";
+
+        QInputDialog dialog(this);
+        dialog.setOptions(QInputDialog::UsePlainTextEditForTextInput);
+        dialog.setWindowTitle(title);
+        dialog.setLabelText(label);
+        dialog.setTextValue(text);
+        QString newName;
+
+        int ret = dialog.exec();
+
+        if (ret == 1)  //Usuário inseriu texto e clicou em ok
+        {
+            newName = dialog.textValue();
+            Label labelVec;
+
+            uint nextId = getNextAvailableIDOFNode();
+            /*QPointF windowPos = viewPortToWindow1({
+                                                      static_cast<double>(event->x()),
+                                                      static_cast<double>(event->y())
+                                                  });*/
+
+            //Criar a cadeia de titulo
+            QStringList list = newName.split("\n");
+            double diffHeight = 15.0;
+            //for (auto part: list)
+            for (int index = list.size()-1; index >= 0; index--)
+            {
+                labelVec.push_back({{-5.0, diffHeight}, list[index]});
+                diffHeight+=15.0;
+            }
+
+            //Altera label do elemento
+            if (type == TYPE::NODE)
+            {
+                mapIDToElement[el.id]->label.clear();
+                mapIDToElement[el.id]->label = labelVec;
+            }
+            else if (type == TYPE::LINK)
+            {
+                mapIDToLink[link.id]->label.clear();
+                mapIDToLink[link.id]->label = labelVec;
+            }
+
+            this->refreshPixmap();
+        }
+    }
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        const QString title = "title";
-        const QString label = "label";
-        const QString text = "text";
+        const QString title = "Label de elemento";
+        const QString label = "Insira o label do elemento";
+        const QString text = "";
 
         QInputDialog dialog(this);
         dialog.setOptions(QInputDialog::UsePlainTextEditForTextInput);

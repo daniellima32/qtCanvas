@@ -643,12 +643,64 @@ bool someElementIsSelected()
     return false;
 }
 
+int selectedElementsCount()
+{
+    int qnt = 0;
+    for (auto &element : elements)
+    {
+        if (element.isSelected)
+        {
+            qnt++;
+        }
+    }
+    return qnt;
+}
+
+bool aquireSelectedElement(ElementsData &el)
+{
+    for (auto &element : elements)
+    {
+        if (element.isSelected)
+        {
+            el = element;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool someLinkIsSelected()
 {
     for (auto &link : links)
     {
         if (link.isSelected)
         {
+            return true;
+        }
+    }
+    return false;
+}
+
+int selectedLinksCount()
+{
+    int qnt = 0;
+    for (auto &link : links)
+    {
+        if (link.isSelected)
+        {
+            qnt++;
+        }
+    }
+    return qnt;
+}
+
+bool aquireLinkSelected(LinkData &l)
+{
+    for (auto &link : links)
+    {
+        if (link.isSelected)
+        {
+            l = link;
             return true;
         }
     }
