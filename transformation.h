@@ -934,7 +934,6 @@ bool someLabelOfLinkWasClicked(const QPointF &mouseViwPortPos)
 bool someBreakLineOfLinkWasClicked(const QPointF &mouseViwPortPos)
 {
     Label l;
-    QPointF point;
 
     ElementsData origEl, destEl;
 
@@ -974,7 +973,6 @@ bool getBreakLineOfLinkThatWasClicked(uint &idOfLinkOwnerOfLabel,
                                       const QPointF &mouseViwPortPos)
 {
     Label l;
-    QPointF point;
 
     ElementsData origEl, destEl;
 

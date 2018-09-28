@@ -259,7 +259,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                         nextId,       //id do destino
                         false,
                         LinkType::NATURAL,
-                        {{{-5, 15}, "Link "+ QString::number(nextLinkId)}}
+                        {{{-5, 15}, "Link "+ QString::number(nextLinkId)}},
+                        {}
                     });
                 }
             }
@@ -808,7 +809,11 @@ void MainWindow::refreshPixmap()
                 painter.drawLine(windowToViewPort1(p1), windowToViewPort1(p2));
 
                 //Desenha símbolo da quebra em p2
-                painter.drawRect(windowToViewPort1(p2).x(), windowToViewPort1(p2).y(), 3, 3);
+                painter.drawRect(
+                            static_cast<int>(windowToViewPort1(p2).x()),
+                            static_cast<int>(windowToViewPort1(p2).y()),
+                            3,
+                            3);
 
                 //Desenhar arrow do link
                 QLineF line(windowToViewPort1(p1), windowToViewPort1(p2));
