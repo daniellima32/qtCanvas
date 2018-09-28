@@ -507,7 +507,21 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             std::vector<QPointF> vec = getRectPoints(origin, final);
             QPoint pLeftTopViewPort = getLeftTop(vec);
             QPoint pRightBottomViewPort = getBottomRight(vec);
-            QRect selectionRect = {viewPortToWindow2(pLeftTopViewPort), viewPortToWindow2(pRightBottomViewPort)};
+
+            QPointF pLeftTopViewPortInWinCoord = viewPortToWindow1(pLeftTopViewPort);
+            QPointF pRightBottomViewPortInWinCoord = viewPortToWindow1(pRightBottomViewPort);
+
+            QRect selectionRect
+                    (
+                        QPoint(
+                            static_cast<int>(pLeftTopViewPortInWinCoord.x()),
+                            static_cast<int>(pLeftTopViewPortInWinCoord.y())
+                            ),
+                        QPoint(
+                            static_cast<int>(pRightBottomViewPortInWinCoord.x()),
+                            static_cast<int>(pRightBottomViewPortInWinCoord.y())
+                            )
+                    );
             for (auto &el: elements)
             {
                 if (

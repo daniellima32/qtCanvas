@@ -100,7 +100,8 @@ PVECTOR2D vSubtractVectors(PVECTOR2D v0,
 {
     if(v0 == nullptr || v1 == nullptr)
     {
-        v = (PVECTOR2D)nullptr;
+        //v = (PVECTOR2D)nullptr;
+        v = nullptr;
     }
     else
     {
@@ -393,7 +394,7 @@ uint getNextAvailableIDOFLink()
 //Checa se o clique foi feito em algum elemento da rede
 //QPointF &mousePos é dado em coordenada de mundo
 bool someElementWasClicked(const QPointF &mousePos,
-                           float radius = 5.0)
+                           double radius = 5.0)
 {
     for (auto &element : elements)
     {
@@ -675,13 +676,13 @@ QPointF viewPortToWindow1(QPointF viewPoint)
     return windowPoint;
 }
 
-QPoint viewPortToWindow2(QPointF viewPoint)
+/*QPoint viewPortToWindow2(QPointF viewPoint)
 {
     QPoint windowPoint;
     windowPoint.setX((((viewPoint.x() - viewPort.point.x()) * window.width) + viewPort.width * window.point.x()) / viewPort.width);
     windowPoint.setY(((viewPort.height * window.point.y()) - ((viewPoint.y() - viewPort.point.y()) * window.height)) / viewPort.height);
     return windowPoint;
-}
+}*/
 
 
 //retorna true se é uma posição inválida
@@ -833,8 +834,10 @@ bool getLabelOfElementThatWasClicked(uint &idOfElementOwnerOfLabel, uint &idLabe
             //i-ésima entrada de Labelline
 
             //deve alterar point para somar a posição de el
-            point = QPoint((int) windowToViewPort1(el.point).x() - l[index].linPointDif.x() -5,
-                    (int) windowToViewPort1(el.point).y() - l[index].linPointDif.y());
+            point = QPoint(
+                        static_cast<int>(windowToViewPort1(el.point).x() - l[index].linPointDif.x() -5),
+                        static_cast<int>(windowToViewPort1(el.point).y() - l[index].linPointDif.y())
+                        );
 
             if (isClickedInElement(point, mouseViwPortPos, 5.0))
             {
@@ -875,8 +878,10 @@ bool getLabelOfLinkThatWasClicked(uint &idOfLinkOwnerOfLabel, uint &idLabel, QPo
             //i-ésima entrada de Labelline
 
             //deve alterar point para somar a posição de el
-            point = QPoint((int) windowToViewPort1(halfPoint).x() - l[index].linPointDif.x() -5,
-                    (int) windowToViewPort1(halfPoint).y() - l[index].linPointDif.y());
+            point = QPoint(
+                        static_cast<int>(windowToViewPort1(halfPoint).x() - l[index].linPointDif.x() -5),
+                        static_cast<int>(windowToViewPort1(halfPoint).y() - l[index].linPointDif.y())
+                        );
 
             if (isClickedInElement(point, mouseViwPortPos, 5.0))
             {
@@ -1072,7 +1077,10 @@ QPoint getLeftTop(std::vector<QPointF> vec)
             }
         }
         if (valid)
-            return QPoint(vec[i].x(), vec[i].y());
+            return QPoint(
+                        static_cast<int>(vec[i].x()),
+                        static_cast<int>(vec[i].y())
+                        );
         else
             valid = true;
     }
@@ -1094,7 +1102,10 @@ QPoint getBottomRight(std::vector<QPointF> vec)
             }
         }
         if (valid)
-            return QPoint(vec[i].x(), vec[i].y());
+            return QPoint(
+                        static_cast<int>(vec[i].x()),
+                        static_cast<int>(vec[i].y())
+                        );
         else
             valid = true;
     }
