@@ -25,6 +25,7 @@ struct LabelLine
 };
 
 using Label = std::vector<LabelLine>;
+using Path = std::vector<QPointF>; //Coordenadas de mundo
 
 struct ElementsData
 {
@@ -41,10 +42,10 @@ struct LinkData
     uint origin;            //id do nó origem
     uint destiny;           //id do nó destino
     bool isSelected;        //Indicação se está selecionado ou não
-    LinkType type;
-    Label label;
+    LinkType type;          //Indicação do tipo de link
+    Label label;            //Conjunto de Labels do link
+    Path path;              //Caminho do link entre a origem e o destino em Coordenadas de mundo
 };
-
 
 typedef struct tagPOINT
 {
@@ -278,7 +279,8 @@ std::vector<LinkData> links =
         1,
         false,
         LinkType::NATURAL,
-        {{{-5, 15}, "Link 0"}}
+        {{{-5, 15}, "Link 0"}},
+        {} //Sem elementos intermediários
     },
     {
         1,
@@ -286,7 +288,8 @@ std::vector<LinkData> links =
         3,
         false,
         LinkType::ARTIFICIAL,
-        {{{-5, 15}, "Link 1"}}
+        {{{-5, 15}, "Link 1"}},
+        {} //Sem elementos intermediários
     },
     {
         2,
@@ -294,7 +297,8 @@ std::vector<LinkData> links =
         3,
         false,
         LinkType::ARTIFICIAL,
-        {{{-5, 15}, "Link 2"}}
+        {{{-5, 15}, "Link 2"}},
+        {} //Sem elementos intermediários
     }
 };
 
@@ -352,6 +356,15 @@ std::vector<ElementsData> elements =
         {{{-5, 15}, "Junction 4"}}
     }
 };
+
+void clearPath(uint linkId)
+{
+    for (auto &l: links)
+    {
+        if (l.id == linkId)
+            l.path.clear();
+    }
+}
 
 float radius = 5.0;
 
@@ -1108,6 +1121,76 @@ QPoint getBottomRight(std::vector<QPointF> vec)
             valid = true;
     }
     return QPoint(0,0);
+}
+
+void insertBreakInPath(uint linkId, QPointF mouseViewPortPos)
+{
+    QPointF mouseWorldPos = viewPortToWindow1(mouseViewPortPos);
+    ElementsData origin, destiny;
+    bool ret1, ret2;
+    for (auto &link : links)
+    {
+        if (link.id == linkId)
+        {
+            ret1 = aquireElementByID(link.origin, origin);
+            ret2 = aquireElementByID(link.destiny, destiny);
+            if (ret1 && ret2)
+            {
+                //Se não tem elementos de quebra, otimizo operação
+                if (link.path.size() == 0)
+                {
+                    //link.path.push_back(mouseWorldPos); //Insere o ponto do mouse
+
+                    //Insere o ponto médio
+                    link.path.push_back(QPointF(
+                                            (origin.point.x() + destiny.point.x())/2,
+                                            (origin.point.y() + destiny.point.y())/2
+                                            ));
+                }
+                else
+                {
+                    bool pathFound = false;
+                    QPointF p1, p2;
+                    p1 = origin.point;
+                    //Descobrir em qual dos paths foi clicado
+                    for (size_t index = 0; index < link.path.size(); index++)
+                    {
+                        p2 = link.path[index];
+
+                        //Verifica se o click foi em p1-p2
+                        if (isPointOfLink(p1, p2, mouseWorldPos))
+                        {
+                            //Deve inserir elementos nessa posição de index
+                            //Insere o ponto do mouse
+                            //link.path.insert(link.path.begin() + static_cast<int>(index), mouseWorldPos);
+
+                            //Insere o ponto médio
+                            link.path.insert(link.path.begin() + static_cast<int>(index), QPointF(
+                                                 (p1.x() + p2.x())/2,
+                                                 (p1.y() + p2.y())/2
+                                                 ));
+
+                            pathFound = false;
+                        }
+
+                        // Se não foi, p1 recebe p2
+                        p1 = p2;
+                    }
+
+                    if (!pathFound)
+                    {
+                        //Verificar se tem link entre p1 e destiny
+                        if (isPointOfLink(p1, destiny.point, mouseWorldPos))
+                        {
+                            //Deve inserir elementos nessa posição de index
+                            //link.path.insert(link.path.begin() + index, mouseWorldPos);
+                            link.path.push_back(mouseWorldPos);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 #endif // TRANSFORMATION_H

@@ -477,7 +477,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                         nextId,
                         false,
                         LinkType::NATURAL,
-                        {{{-5, 15}, "Link "+ QString::number(nextLinkId)}}
+                        {{{-5, 15}, "Link "+ QString::number(nextLinkId)}},
+                        {} //Sem elementos intermediários
                     }
                                 );
                 }
@@ -635,6 +636,26 @@ void MainWindow::dealWithcontextMenuEvent(QMouseEvent *event)
                 changeLinkType(id, LinkType::ARTIFICIAL);
             });
         }
+
+        //Sempre sugerir quebrar link
+        //Quebra de link
+        QAction* breakArt = new QAction(tr("&Inserir quebra de link"), this);
+        menu.addAction(breakArt);
+        connect(breakArt, &QAction::triggered, this, [=](){
+            //changeLinkType(id, LinkType::ARTIFICIAL);
+            insertBreakInPath(id, viewPortPos);
+        });
+
+        //Se tem quebra de link, sugerir a remoção de quebra de link
+        if (link.path.size() == 0)
+        {
+            //Quebra de link
+            QAction* removeBreakArt = new QAction(tr("&Remover quebras de link"), this);
+            menu.addAction(removeBreakArt);
+            connect(removeBreakArt, &QAction::triggered, this, [=](){;
+                clearPath(link.id);
+            });
+        }
     }
 
     menu.exec(event->globalPos());
@@ -709,15 +730,66 @@ void MainWindow::refreshPixmap()
         uint idDestiny = link.destiny;
 
         ElementsData originElement, destinyElement;
-        aquireElementByID(idOrigin, originElement);
-        aquireElementByID(idDestiny, destinyElement);
+        bool ret1, ret2;
+        ret1 = aquireElementByID(idOrigin, originElement);
+        ret2 = aquireElementByID(idDestiny, destinyElement);
+
+        if (!ret1 || !ret2) continue;
 
         //Desenhar a reta
-        painter.drawLine(windowToViewPort1(originElement.point),
-                         windowToViewPort1(destinyElement.point));
+        /*painter.drawLine(windowToViewPort1(originElement.point),
+                         windowToViewPort1(destinyElement.point));*/
 
-        //Desenhar a seta
-        if (link.type == LinkType::NATURAL)
+        //Inicio de novo código
+        //Se não tem elementos de quebra, otimizo operação de desenho
+        if (link.path.size() == 0)
+        {
+            painter.drawLine(windowToViewPort1(originElement.point),
+                                     windowToViewPort1(destinyElement.point));
+
+            //Desenhar arrow do link
+            if (link.type == LinkType::NATURAL)
+            {
+                painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+                painter.setPen(Qt::blue);
+            }
+            else
+            {
+                painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+                painter.setPen(Qt::black);
+            }
+
+            QLineF line(windowToViewPort1(originElement.point), windowToViewPort1(destinyElement.point));
+            std::vector<QPointF> vec = CoordinatesManip::getArrowPoints(line);
+
+            if (vec.size() == 0) continue;
+            painter.drawConvexPolygon(vec.data(), 3);
+        }
+        else
+        {
+            QPointF p1, p2;
+            p1 = originElement.point;
+            //Descobrir em qual dos paths foi clicado
+            for (size_t index = 0; index < link.path.size(); index++)
+            {
+                p2 = link.path[index];
+
+                //Desenha link de p1 para p2
+                painter.drawLine(windowToViewPort1(p1), windowToViewPort1(p2));
+
+                //Desenha símbolo da quebra em p2
+                painter.drawRect(windowToViewPort1(p2).x(), windowToViewPort1(p2).y(), 3, 3);
+            }
+
+            //Desenha link do último para o primeiro
+            painter.drawLine(windowToViewPort1(link.path[link.path.size()-1]),
+                    windowToViewPort1(destinyElement.point));
+        }
+
+        //Fim de novo código
+
+        //Desenhar arrow do link
+        /*if (link.type == LinkType::NATURAL)
         {
             painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
             painter.setPen(Qt::blue);
@@ -732,7 +804,7 @@ void MainWindow::refreshPixmap()
         std::vector<QPointF> vec = CoordinatesManip::getArrowPoints(line);
 
         if (vec.size() == 0) continue;
-        painter.drawConvexPolygon(CoordinatesManip::getArrowPoints(line).data(), 3);
+        painter.drawConvexPolygon(vec.data(), 3);*/
 
         //Desenhar label de link
         //Escrever o label
