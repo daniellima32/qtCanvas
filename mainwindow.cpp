@@ -650,7 +650,10 @@ void MainWindow::dealWithcontextMenuEvent(QMouseEvent *event)
     else if (someLinkWasClicked(windowPos, true)) // considerando partes interiores
     {
         LinkData link;
-        aquireClickedLink(windowPos, link);
+        bool ret = aquireClickedLink(windowPos, link, true);// considerando partes interiores
+
+        if (!ret) return;
+
         uint id = link.id;
 
         if (link.type != LinkType::NATURAL)
