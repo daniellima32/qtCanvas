@@ -46,12 +46,6 @@ struct LinkData
 };
 
 
-
-//#define MPOINT2POINT(mpt, pt)   ((pt).x = (mpt).x, (pt).y = (mpt).y)
-//#define POINT2MPOINT(pt, mpt)   ((mpt).x = (SHORT)(pt).x, (mpt).y = (SHORT)(pt).y)
-/*#define POINTS2VECTOR2D(pt0, pt1, vect) ((vect).x = (double)((pt1).x - (pt0).x), \
-                                         (vect).y = (double)((pt1).y - (pt0).y))*/
-
 typedef struct tagPOINT
 {
     long  x;
@@ -408,7 +402,7 @@ bool someElementWasClicked(const QPointF &mousePos,
 
 bool aquireIDOfClickedElement(const QPointF &mousePos,
                               uint& id,
-                           float radius = 5.0)
+                           double radius = 5.0)
 {
     for (auto &element : elements)
     {
@@ -423,7 +417,7 @@ bool aquireIDOfClickedElement(const QPointF &mousePos,
 
 bool aquireClickedElement(const QPointF &mousePos,
                           ElementsData &el,
-                          float radius = 2.5)
+                          double radius = 2.5)
 {
     for (auto &element : elements)
     {
@@ -766,8 +760,10 @@ bool someLabelOfElementWasClicked(const QPointF &mouseViwPortPos)
             //i-ésima entrada de Labelline
 
             //deve alterar point para somar a posição de el
-            point = QPoint((int) windowToViewPort1(el.point).x() - l[index].linPointDif.x() -5,
-                    (int) windowToViewPort1(el.point).y() - l[index].linPointDif.y());
+            point = QPoint(
+                        static_cast<int>(windowToViewPort1(el.point).x() - l[index].linPointDif.x() -5),
+                        static_cast<int>(windowToViewPort1(el.point).y() - l[index].linPointDif.y())
+                        );
 
             if (isClickedInElement(point, mouseViwPortPos, 5.0))
             {
@@ -805,8 +801,10 @@ bool someLabelOfLinkWasClicked(const QPointF &mouseViwPortPos)
             //i-ésima entrada de Labelline
 
             //deve alterar point para somar a posição de el
-            point = QPoint((int) windowToViewPort1(halfPoint).x() - l[index].linPointDif.x() -5,
-                    (int) windowToViewPort1(halfPoint).y() - l[index].linPointDif.y());
+            point = QPoint(
+                        static_cast<int>(windowToViewPort1(halfPoint).x() - l[index].linPointDif.x() -5),
+                        static_cast<int>(windowToViewPort1(halfPoint).y() - l[index].linPointDif.y())
+                        );
 
             if (isClickedInElement(point, mouseViwPortPos, 5.0))
             {
