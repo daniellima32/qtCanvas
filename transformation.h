@@ -475,11 +475,6 @@ bool someLinkWasClicked(const QPointF &mousePos)
     return false;
 }
 
-bool someElementOrLinkWasClicked(const QPointF &mousePos)
-{
-    return  (someElementWasClicked(mousePos) || someLinkWasClicked(mousePos));
-}
-
 bool aquireClickedLink(const QPointF &mousePos, LinkData &l)
 {
     ElementsData origin, destiny;
@@ -821,6 +816,78 @@ bool someLabelOfLinkWasClicked(const QPointF &mouseViwPortPos)
 
             if (isClickedInElement(point, mouseViwPortPos, 5.0))
             {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool someBreakLineOfLinkWasClicked(const QPointF &mouseViwPortPos)
+{
+    Label l;
+    QPointF point;
+
+    ElementsData origEl, destEl;
+
+    for (auto link: links)
+    {
+        //Para pular elementos desnecessários
+        if (!link.isSelected) continue;
+
+        //Obtem origem
+        aquireElementByID(link.origin, origEl);
+        //Obtem destino
+        aquireElementByID(link.destiny, destEl);
+
+        for (size_t index = 0; index < link.path.size(); ++index)
+        {
+            if (isClickedInElement(link.path[index], mouseViwPortPos, 5.0))
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+//bool someElementOrLinkWasClicked(const QPointF &mousePos)
+bool someElementOrLinkOrLineBreakWasClicked(const QPointF &mousePos)
+{
+    return  (someElementWasClicked(mousePos) ||
+             someLinkWasClicked(mousePos) ||
+             someBreakLineOfLinkWasClicked(mousePos));
+}
+
+bool getBreakLineOfLinkThatWasClicked(uint &idOfLinkOwnerOfLabel,
+                                      size_t &indexOfLineBreak,
+                                      QPointF &labelBreakBackup,
+                                      const QPointF &mouseViwPortPos)
+{
+    Label l;
+    QPointF point;
+
+    ElementsData origEl, destEl;
+
+    for (auto link: links)
+    {
+        //Para pular elementos desnecessários
+        if (!link.isSelected) continue;
+
+        //Obtem origem
+        aquireElementByID(link.origin, origEl);
+        //Obtem destino
+        aquireElementByID(link.destiny, destEl);
+
+        for (size_t index = 0; index < link.path.size(); ++index)
+        {
+            if (isClickedInElement(link.path[index], mouseViwPortPos, 5.0))
+            {
+                idOfLinkOwnerOfLabel = link.id;
+                indexOfLineBreak = index;
+                labelBreakBackup = link.path[index];
                 return true;
             }
         }

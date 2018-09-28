@@ -37,10 +37,14 @@ private:
 
     bool labelOfElementBeeingChanged = false;
     bool labelOfLinkBeeingChanged = false;
+    bool lineBreakOfLinkBeeingChanged = false;
     uint idOfElementOwnerOfLabel;
     uint idOfLinkOwnerOfLabel;
+    uint idOfLinkOwnerOfLineBreak;
     uint idLabel;
+    uint idLineBreak;
     QPointF labelDiffBackup;
+    QPointF lineBreakBackup;
 };
 
 #endif // MAINWINDOW_H

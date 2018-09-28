@@ -212,6 +212,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     elementsBeeingMoved = false;
     labelOfElementBeeingChanged = false;
     labelOfLinkBeeingChanged = false;
+    lineBreakOfLinkBeeingChanged = false;
 
     //Checa se um elemento temporário foi inserido
     if (temporaryElementInserted)
@@ -413,6 +414,37 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
                 QPointF pDiff = labelDiffBackup;
                 translatePoint(translateFactor, pDiff);
                 mapIDToLink[idOfLinkOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+            }
+        }
+        //deve refazer someLinkWasClicked .. talvez não
+        //deve refazer aquireClickedLink .. talvez não
+        //Detectar clique em linebreak de link
+        else if(lineBreakOfLinkBeeingChanged || someBreakLineOfLinkWasClicked(lastMouseWindowPosition))
+        {
+            QPointF viewPortPos (static_cast<double>(event->x()),
+                                 static_cast<double>(event->y()));
+            if (!lineBreakOfLinkBeeingChanged)
+            {
+                //ret = getLabelOfLinkThatWasClicked(idOfLinkOwnerOfLabel, idLabel, labelDiffBackup, windowToViewPort1(lastMouseWindowPosition));
+                ret = getBreakLineOfLinkThatWasClicked(idOfLinkOwnerOfLineBreak, idLineBreak, lineBreakBackup, lastMouseWindowPosition);
+            }
+
+            if (ret)
+            {
+                lineBreakOfLinkBeeingChanged = true; //No próximo evento, lineBreakOfLinkBeeingChanged já tem o valor true,
+                //evitando fazer a parte direita da comparação do if
+
+                /*QPointF translateFactor ((viewPortPos.x() - windowToViewPort1(lastMouseWindowPosition).x()),
+                                                     -(viewPortPos.y() - windowToViewPort1(lastMouseWindowPosition).y()));*/
+
+                QPointF translateFactor ((viewPortToWindow1(viewPortPos).x() - lastMouseWindowPosition.x()),
+                                                     (viewPortToWindow1(viewPortPos).y() - lastMouseWindowPosition.y()));
+
+                //QPointF pDiff = labelDiffBackup;
+                QPointF pDiff = lineBreakBackup;
+                translatePoint(translateFactor, pDiff);
+                //mapIDToLink[idOfLinkOwnerOfLabel]->label[idLabel].linPointDif = pDiff;
+                mapIDToLink[idOfLinkOwnerOfLineBreak]->path[idLineBreak] = pDiff;
             }
         }
         else
@@ -683,7 +715,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     lastMouseWindowPosition = windowPos;
     if (event->buttons() == Qt::RightButton)
     {
-        if (someElementOrLinkWasClicked(windowPos) && !someElementIsSelected())
+        //if (someElementOrLinkWasClicked(windowPos) && !someElementIsSelected())
+        bool v1, v2, v3;
+        v1 = someElementOrLinkOrLineBreakWasClicked(windowPos);
+        v2 = !someElementIsSelected(); //aqui ta vindo true, mas deve vir falso
+        v3 = !someLinkIsSelected(); //aqui ta vindo true, mas deve vir falso
+        //if (someElementOrLinkOrLineBreakWasClicked(windowPos) && !someElementIsSelected())
+        if (v1 && v2 && v3)
         {
             dealWithcontextMenuEvent(event);
         }
