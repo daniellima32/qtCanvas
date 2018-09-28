@@ -748,7 +748,7 @@ void MainWindow::refreshPixmap()
                                      windowToViewPort1(destinyElement.point));
 
             //Desenhar arrow do link
-            if (link.type == LinkType::NATURAL)
+            /*if (link.type == LinkType::NATURAL)
             {
                 painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
                 painter.setPen(Qt::blue);
@@ -757,7 +757,7 @@ void MainWindow::refreshPixmap()
             {
                 painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
                 painter.setPen(Qt::black);
-            }
+            }*/
 
             QLineF line(windowToViewPort1(originElement.point), windowToViewPort1(destinyElement.point));
             std::vector<QPointF> vec = CoordinatesManip::getArrowPoints(line);
@@ -769,6 +769,18 @@ void MainWindow::refreshPixmap()
         {
             QPointF p1, p2;
             p1 = originElement.point;
+
+            /*if (link.type == LinkType::NATURAL)
+            {
+                painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+                painter.setPen(Qt::blue);
+            }
+            else
+            {
+                painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+                painter.setPen(Qt::black);
+            }*/
+
             //Descobrir em qual dos paths foi clicado
             for (size_t index = 0; index < link.path.size(); index++)
             {
@@ -779,11 +791,41 @@ void MainWindow::refreshPixmap()
 
                 //Desenha símbolo da quebra em p2
                 painter.drawRect(windowToViewPort1(p2).x(), windowToViewPort1(p2).y(), 3, 3);
+
+                //Desenhar arrow do link
+                QLineF line(windowToViewPort1(p1), windowToViewPort1(p2));
+                std::vector<QPointF> vec = CoordinatesManip::getArrowPoints(line);
+
+                if (vec.size() == 0) continue;
+                painter.drawConvexPolygon(vec.data(), 3);
+
+                p1 = p2;
             }
 
             //Desenha link do último para o primeiro
             painter.drawLine(windowToViewPort1(link.path[link.path.size()-1]),
                     windowToViewPort1(destinyElement.point));
+
+            //Desenhar arrow do link
+            /*if (link.type == LinkType::NATURAL)
+            {
+                painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+                painter.setPen(Qt::blue);
+            }
+            else
+            {
+                painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+                painter.setPen(Qt::black);
+            }*/
+
+            QLineF line(
+                        windowToViewPort1(link.path[link.path.size()-1]),
+                        windowToViewPort1(destinyElement.point)
+                    );
+            std::vector<QPointF> vec = CoordinatesManip::getArrowPoints(line);
+
+            if (vec.size() == 0) continue;
+            painter.drawConvexPolygon(vec.data(), 3);
         }
 
         //Fim de novo código

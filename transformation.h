@@ -1170,7 +1170,7 @@ void insertBreakInPath(uint linkId, QPointF mouseViewPortPos)
                                                  (p1.y() + p2.y())/2
                                                  ));
 
-                            pathFound = false;
+                            pathFound = true;
                         }
 
                         // Se não foi, p1 recebe p2
